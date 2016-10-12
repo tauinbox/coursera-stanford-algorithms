@@ -1,30 +1,23 @@
+# Method: Karatsuba multiplication
+
+# Input data:
+
 x = 3141592653589793238462643383279502884197169399375105820974944592
 y = 2718281828459045235360287471352662497757247093699959574966967627
 
-# x = 1234
-# y = 5678
-
-# x = 123
-# y = 456
-
-# x = 12
-# y = 34
-
-# x = 46
-# y = 134
-
 def product(x, y)
 
+  # convert input data to strings
   x_string = x.to_s
   y_string = y.to_s
 
+  # define the longest string and set it up as 'n'
   n = [x_string.length, y_string.length].max
   puts
   puts("n = #{n}")
 
+  # return simple product if there are one-digit numbers
   if n == 1
-    # puts '=========='
-    # puts(x, y)
     puts("return #{x} * #{y} = #{x * y}")
     return x * y
   end
@@ -32,6 +25,7 @@ def product(x, y)
   # middle = (n.to_f/2).floor
   middle = (n.to_f/2).ceil
 
+  # define a, b, c, d
   if n > x_string.length
     a = 0
     b = x
@@ -48,12 +42,14 @@ def product(x, y)
     d = y_string[(middle)...y_string.length].to_i  
   end
 
+  #print out defined attributes
   puts '=========='
   puts "x = #{x}, y = #{y}"
   puts("n/2: #{n.to_f/2} => middle = #{middle}")
   puts("x length: #{x_string.length}, y length: #{y_string.length}")
   puts("a,b,c,d: #{a},#{b},#{c},#{d}")
 
+  # recursive calculations
   ac = product(a, c)
   bd = product(b, d)
   puts "a + b = #{a} + #{b} = #{a + b}"
@@ -68,6 +64,7 @@ def product(x, y)
   gauss_trick = gauss_trick - ac - bd
   puts("a+b = #{a+b}, c+d = #{c+d}")
 
+  # the power must be always even, so make it this way
   pow = n / 2
   pow = pow * 2
 
@@ -77,11 +74,11 @@ def product(x, y)
   puts bd
   puts
 
-  # return ac * (10 ** n) + gauss_trick * (10 ** (n / 2)) + bd
-
+  # the main calculation by Karatsuba method
   return ac * (10 ** pow) + gauss_trick * (10 ** (pow / 2)) + bd
 
 end
 
+# print out the result:
 puts product(x,y)
 
