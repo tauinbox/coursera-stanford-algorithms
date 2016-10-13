@@ -71,14 +71,9 @@ def sort_and_count(a)
       else
         out << c[j]
         # puts "=== c < b === inversion detected! put #{c[j]} to out, out is #{out}"
-        @inversion += 1
-
-        (i+1).upto(b.length - 1) do |index|
-          if b[index] > c[j]
-            # puts "============= split inversion detected !!!"
-            @inversion += 1
-          end
-        end
+        
+        # check for all split inversions
+        @inversion += (b.length - i)
 
         j += 1
         if (c.length - j) == 0
