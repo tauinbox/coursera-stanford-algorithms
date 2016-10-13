@@ -19,11 +19,14 @@ def sort_and_count(a)
 
   middle = (n.to_f/2).ceil
 
+
   left_half = a[0...middle]
   right_half = a[(middle)...n]
 
+  puts "______________________________________________________________"
   puts("left: #{left_half}")
   puts("right: #{right_half}")
+  puts "______________________________________________________________"
 
   b = [[], 0]
   c = [[], 0]
@@ -32,8 +35,8 @@ def sort_and_count(a)
   b = sort_and_count(left_half)
   c = sort_and_count(right_half)
 
-  puts "-------------------------------------------------------------- b is: #{b}"
-  puts "-------------------------------------------------------------- c is: #{c}"
+  puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> b is: #{b}"
+  puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> c is: #{c}"
 
   out = [[], 0]
   i = 0
@@ -42,21 +45,24 @@ def sort_and_count(a)
   b_empty, c_empty = false
 
   n.times do
+    puts
+    puts "left_half is #{left_half}, right_half is #{right_half}"
 
-    puts "b[#{i}] = #{b[0][i]}"
-    puts "c[#{j}] = #{c[0][j]}"
+    puts "i = #{i}, j = #{j}, n = #{n}"
+    puts
 
-    puts "i: #{i}, n: #{n}"
-    puts "j: #{j}, n: #{n}"
+    puts "b[#{i}] = #{b[0][i]}, c[#{j}] = #{c[0][j]}"
+    puts
 
     puts "b.length: #{b[0].length}"
     puts "c.length: #{c[0].length}"
+    puts
 
     if !b_empty && !c_empty
 
       if (b[0][i] <= c[0][j])
         out[0] << b[0][i]
-        puts "=== b < c === put #{b[0][i]} to out"
+        puts "=== b < c === put #{b[0][i]} to out, out is #{out[0]}"
         i += 1
         if (b[0].length - i) == 0
           b_empty = true
@@ -64,9 +70,18 @@ def sort_and_count(a)
         end
       else
         out[0] << c[0][j]
-        puts "=== c < b === inversion detected! put #{c[0][j]} to out"
+        puts "=== c < b === inversion detected! put #{c[0][j]} to out, out is #{out[0]}"
         out[1] += 1
         @inversion += 1
+
+        (i+1).upto(b[0].length - 1) do |index|
+          if b[0][index] > c[0][j]
+            puts "Another inversion detected !!!"
+            out[1] += 1
+            @inversion += 1
+          end
+        end
+
         j += 1
         if (c[0].length - j) == 0
           c_empty = true
@@ -75,16 +90,16 @@ def sort_and_count(a)
       end
 
     elsif b_empty
-      puts "b is already empty, get from c"
       out[0] << c[0][j]
+      puts "b is already empty, geting #{c[0][j]} from c, out is #{out[0]}"
       j += 1
       if (c[0].length - j) == 0
         c_empty = true
         puts "c is empty"
       end
     elsif c_empty
-      puts "c is already empty, get from b"
       out[0] << b[0][i]
+      puts "c is already empty, getting #{b[0][i]} from b, out is #{out[0]}"      
       i += 1
       if (b[0].length - i) == 0
         b_empty = true
