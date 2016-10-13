@@ -15,7 +15,7 @@ load_data 'TestArray.txt'
 def sort_and_count(a)
 
   n = a.length
-  return [a, 0] if n == 1
+  return a if n == 1
 
   middle = (n.to_f/2).ceil
 
@@ -28,9 +28,9 @@ def sort_and_count(a)
   puts("right: #{right_half}")
   puts "______________________________________________________________"
 
-  b = [[], 0]
-  c = [[], 0]
-  d = [[], 0]
+  b = []
+  c = []
+  d = []
 
   b = sort_and_count(left_half)
   c = sort_and_count(right_half)
@@ -38,7 +38,7 @@ def sort_and_count(a)
   puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> b is: #{b}"
   puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> c is: #{c}"
 
-  out = [[], 0]
+  out = []
   i = 0
   j = 0
 
@@ -51,57 +51,55 @@ def sort_and_count(a)
     puts "i = #{i}, j = #{j}, n = #{n}"
     puts
 
-    puts "b[#{i}] = #{b[0][i]}, c[#{j}] = #{c[0][j]}"
+    puts "b[#{i}] = #{b[i]}, c[#{j}] = #{c[j]}"
     puts
 
-    puts "b.length: #{b[0].length}"
-    puts "c.length: #{c[0].length}"
+    puts "b.length: #{b.length}"
+    puts "c.length: #{c.length}"
     puts
 
     if !b_empty && !c_empty
 
-      if (b[0][i] <= c[0][j])
-        out[0] << b[0][i]
-        puts "=== b < c === put #{b[0][i]} to out, out is #{out[0]}"
+      if (b[i] <= c[j])
+        out << b[i]
+        puts "=== b < c === put #{b[i]} to out, out is #{out}"
         i += 1
-        if (b[0].length - i) == 0
+        if (b.length - i) == 0
           b_empty = true
           puts "b is empty"
         end
       else
-        out[0] << c[0][j]
-        puts "=== c < b === inversion detected! put #{c[0][j]} to out, out is #{out[0]}"
-        out[1] += 1
+        out << c[j]
+        puts "=== c < b === inversion detected! put #{c[j]} to out, out is #{out}"
         @inversion += 1
 
-        (i+1).upto(b[0].length - 1) do |index|
-          if b[0][index] > c[0][j]
-            puts "Another inversion detected !!!"
-            out[1] += 1
+        (i+1).upto(b.length - 1) do |index|
+          if b[index] > c[j]
+            puts "============= split inversion detected !!!"
             @inversion += 1
           end
         end
 
         j += 1
-        if (c[0].length - j) == 0
+        if (c.length - j) == 0
           c_empty = true
           puts "c is empty"
         end
       end
 
     elsif b_empty
-      out[0] << c[0][j]
-      puts "b is already empty, geting #{c[0][j]} from c, out is #{out[0]}"
+      out << c[j]
+      puts "b is already empty, geting #{c[j]} from c, out is #{out}"
       j += 1
-      if (c[0].length - j) == 0
+      if (c.length - j) == 0
         c_empty = true
         puts "c is empty"
       end
     elsif c_empty
-      out[0] << b[0][i]
-      puts "c is already empty, getting #{b[0][i]} from b, out is #{out[0]}"      
+      out << b[i]
+      puts "c is already empty, getting #{b[i]} from b, out is #{out}"      
       i += 1
-      if (b[0].length - i) == 0
+      if (b.length - i) == 0
         b_empty = true
         puts "b is empty"
       end
