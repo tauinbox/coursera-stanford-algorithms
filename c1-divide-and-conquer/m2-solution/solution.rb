@@ -1,16 +1,21 @@
-@a = []
-@inversions = 0
+
+###########################################################################################################################
 
 def load_data(filename)
+
+  a ||= []
+
   if File.exist? filename
     File.foreach (filename) do |line|
-      @a << line.chomp.to_i
+      a << line.chomp.to_i
     end
   end
+
+  return a
+
 end
 
-load_data 'IntegerArray.txt'
-# load_data 'TestArray.txt'
+###########################################################################################################################
 
 def sort_and_count(a)
 
@@ -31,7 +36,12 @@ def sort_and_count(a)
 
 end
 
+###########################################################################################################################
+
 def merge_and_count_inversions(b, c, n)
+
+  #initialize an inversions counter
+  @inversions ||= 0
 
   out = []
   i = j = 0
@@ -64,7 +74,7 @@ def merge_and_count_inversions(b, c, n)
           # puts "b is empty"
         end
       else
-        # we found inversion! means b[j] > c[j], take the smallest to output
+        # we found inversion! means b[i] > c[j], take the smallest to output
         out << c[j]
         # puts "=== c < b === inversion detected! put #{c[j]} to out, out is #{out}"
         
@@ -105,6 +115,16 @@ def merge_and_count_inversions(b, c, n)
 
 end
 
+###########################################################################################################################
+
+input_file = 'IntegerArray.txt'
+# input_file = 'TestArray.txt'
+
+a = load_data input_file
+
 # puts "++++++++++++++++++++ #{sort_and_count(@a)} +++++++++++++++++"
-sort_and_count(@a)
-puts @inversions
+sort_and_count(a)
+
+puts "\n-----------------------------------------------------------"
+puts "Found #{@inversions} inversions in input array #{input_file}"
+puts "-----------------------------------------------------------\n"
