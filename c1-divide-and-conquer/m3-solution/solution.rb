@@ -23,66 +23,74 @@ end
 
 ###########################################################################################################################
 
-def quick_sort(a, l, r)
+def quick_sort(a, l, r, pivot_logic)
 
   @comparisons ||= 0
 
-  # n = a.length
-  # return 1 if n == 1
-  if (r - l) < 1
-    puts "have: #{a[l..r]}"
-    puts "no sufficient input, r - l = #{r} - #{l} = #{(r - l)}"
-    return 
+  if (r - l) == 0
+    puts "have only one element: #{a[l..r]}, nothing to sort"
+    return a[l..r]
   end
 
-  p_index = l
-  p = a[l]
+  case pivot_logic
+  when 'l'
+    p_index = l
+    p = a[l]
+  when 'r'
+    p_index = r
+    p = a[r]
+  end
 
   puts
-  puts "-=-=-=-=-=-=-=-=-=-=-=-=-=-=- STARTING with A: #{a[l..r]}, p: #{p}, p_index: #{p_index}, l=#{l}, r=#{r}"
+  puts "-=-=-=-=-=-=-=-=-=-=-=-=-=-=- STARTING with array: #{a[l..r]}, pivot = #{p}, p_index = #{p_index}, l=#{l}, r=#{r}"
 
-  # a.swap!(0, p_index) if p_index > 0
+  # put the pivot on the 1st place in given array
+  if p_index > l
+    puts "putting the pivot on the 1st place in given array"
+    a.swap!(l, p_index) if p_index > l
+    puts "now we have the array: #{a[l..r]}"
+  end
 
   i = l + 1
+  found_less_than_pivot = false
 
   for j in (l + 1)..r
     puts "i = #{i}, j = #{j}, looking at #{a[j]}"
 
     if a[j] < p
-      puts "--------------------------  swap a[#{j}]=#{a[j]} with a[#{i}]=#{a[i]}"
-      a.swap!(i, j)
-      puts "swapping done! A: #{a[l..r]}"
-      i += 1        
+      found_less_than_pivot = true
+      if i != j
+        puts "--------------------------  swap a[#{j}]=#{a[j]} with a[#{i}]=#{a[i]}"
+        a.swap!(i, j)
+        puts "swapping done! resulting array: #{a[l..r]}"
+      end
+      i += 1
     end
     @comparisons += 1
   end
 
   puts "Scan completed... i = #{i}, j = #{j}"
-  puts "-=-=-=-=-=-=-=-=-=-=-=-=-=-=- DONE result before swapping the pivot: #{a[l..r]}"
+  puts "-=-=-=-=-=-=-=-=-=-=-=-=-=-=- processing done, now we have the array: #{a[l..r]}"
 
-  # swap the pivot with the right most element which is smaller than the pivot
-  a.swap!(p_index, (i - 1))
-  puts "-=-=-=-=-=-=-=-=-=-=-=-=-=-=- DONE result afer swapping the pivot:   #{a[l..r]}"
-
-  # puts "parts:"
-
-  if i > 1
-    # puts "#{a[0..i-2]}"
-    quick_sort(a, 0, i-2)
-  end
-  if (r - i) > 1
-    # puts "#{a[i..r]}"
-    quick_sort(a, i, r)
+  if found_less_than_pivot
+    a.swap!(p_index, i - 1)
+    puts "put the pivot #{p} on its proper place (i - 1) = #{i - 1}"
+    p_index = i - 1
   end
 
-      
+  puts "-=-=-=-=-=-=-=-=-=-=-=-=-=-=- [DONE] result aray:  #{a[l..r]}, pivot = #{p}, p_index = #{p_index}, l = #{l}, r = #{r}, i = #{i}"
+  puts
 
-  # puts "#{a[0..i-2]} - #{a[i..r]}"
+  if (p_index - l) > 0
+    puts "left part is sending to sort: #{a[l..p_index-1]}"
+    quick_sort(a, l, p_index - 1, pivot_logic)    
+  end
 
-  # quick_sort(a, 0, i-2)
-  # quick_sort(a, i, r)
+  if (r - p_index) > 0
+    puts "right part is sending to sort: #{a[p_index+1..r]}"
+    quick_sort(a, p_index + 1, r, pivot_logic)
+  end
 
-  # puts "A: #{a}"
   return a
 
 end
@@ -95,7 +103,12 @@ input_file = 'TestArray.txt'
 a = load_data input_file
 r = a.length - 1
 
-puts "#{quick_sort(a, 0, r)}"
+puts "Final result: #{quick_sort(a, 0, r, 'l')}"
 puts @comparisons
 
+# gets
+
+# @comparisons = 0
+# puts "Final result: #{quick_sort(a, 0, r, 'r')}"
+# puts @comparisons
 
