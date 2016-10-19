@@ -115,10 +115,15 @@ end
 def choose_pivot(a, l, r, pivot_logic)
 
   case pivot_logic
+
+  # always choose pivot as most left (first) element of array
   when 'l'
     p_index = l
+  # always choose pivot as most right (last) element of array    
   when 'r'
     p_index = r
+
+  # choose pivot as a median among first, middle and last elements (using the "median-of-three" pivot rule)
   when 'm'
     if (r - l) == 1
       if a[l] < a[r]
@@ -129,15 +134,19 @@ def choose_pivot(a, l, r, pivot_logic)
     else
       three = {}
 
+      # take the first element
       three[l] = a[l]
 
       middle = ((r - l).to_f/2).floor + l
       middle = l if middle < l
 
+      # take the middle element
       three[middle] = a[middle]
 
+      # take the last element
       three[r] = a[r]
 
+      # calculate the index of the median element
       p_index = three.sort_by { |key, value| value }[1][0]
 
       # puts
@@ -162,5 +171,5 @@ r = a.length - 1
 result = quick_sort(a, 0, r, 'm')
 # puts result
 puts "\n-----------------------------------------------------------"
-puts "Found #{@comparisons} comparisons during procesing"
+puts "Found #{@comparisons} comparisons during processing"
 puts "-----------------------------------------------------------\n"
