@@ -1,6 +1,6 @@
 ###########################################################################################################################
 
-# Monkey patching of Array class, added new method to swap elements
+# Monkey patching of Array class, added a new method to swap elements
 
 class Array
   def swap!(a, b)
@@ -116,15 +116,16 @@ def choose_pivot(a, l, r, pivot_logic)
 
   case pivot_logic
 
-  # always choose pivot as most left (first) element of array
-  when 'l'
+  # choose the pivot as most left (first) element of input array
+  when 'pivot_is_first'
     p_index = l
-  # always choose pivot as most right (last) element of array    
-  when 'r'
+
+  # choose the pivot as most right (last) element of input array    
+  when 'pivot_is_last'
     p_index = r
 
-  # choose pivot as a median among first, middle and last elements (using the "median-of-three" pivot rule)
-  when 'm'
+  # choose the pivot as a median among first, middle and last elements (using the "median-of-three" pivot rule)
+  when 'pivot_is_median'
     if (r - l) == 1
       if a[l] < a[r]
         p_index = l
@@ -152,6 +153,12 @@ def choose_pivot(a, l, r, pivot_logic)
       # puts
       # puts "array a[#{l}..#{r}]: #{a[l..r]} ----------------------> left(#{l}): #{three[l]}, middle(#{middle}): #{three[middle]}, right(#{r}): #{three[r]}, median: #{a[p_index]}"
     end
+
+  # choose the pivot randomly
+  when 'pivot_is_random'
+      p_index = rand(l..r)
+
+  # by default we choose 'pivot_is_first' strategy
   else
     p_index = l
   end
@@ -168,8 +175,14 @@ a = load_data input_file
 r = a.length - 1
 
 @comparisons = 0
-result = quick_sort(a, 0, r, 'm')
-# puts result
+pivot_strategy = 'pivot_is_median'
+
+# usage: quick_sort(Array, Left boundary of input array, Right boundary of input array, Pivot strategy)
+result = quick_sort(a, 0, r, pivot_strategy)
+
+puts result
+
 puts "\n-----------------------------------------------------------"
+puts "Used the '#{pivot_strategy}'' strategy"
 puts "Found #{@comparisons} comparisons during processing"
 puts "-----------------------------------------------------------\n"
