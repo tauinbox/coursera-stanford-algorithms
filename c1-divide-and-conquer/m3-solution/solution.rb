@@ -124,8 +124,13 @@ def choose_pivot(a, l, r, pivot_logic)
   when 'pivot_is_last'
     p_index = r
 
+  # choose the pivot randomly
+  when 'pivot_is_random'
+      p_index = rand(l..r)
+
+  # by default we choose the 'pivot_is_median' strategy:
   # choose the pivot as a median among first, middle and last elements (using the "median-of-three" pivot rule)
-  when 'pivot_is_median'
+  else
     if (r - l) == 1
       if a[l] < a[r]
         p_index = l
@@ -153,14 +158,6 @@ def choose_pivot(a, l, r, pivot_logic)
       # puts
       # puts "array a[#{l}..#{r}]: #{a[l..r]} ----------------------> left(#{l}): #{three[l]}, middle(#{middle}): #{three[middle]}, right(#{r}): #{three[r]}, median: #{a[p_index]}"
     end
-
-  # choose the pivot randomly
-  when 'pivot_is_random'
-      p_index = rand(l..r)
-
-  # by default we choose 'pivot_is_first' strategy
-  else
-    p_index = l
   end
 
   return p_index  
@@ -183,6 +180,6 @@ result = quick_sort(a, 0, r, pivot_strategy)
 puts result
 
 puts "\n-----------------------------------------------------------"
-puts "Used the '#{pivot_strategy}'' strategy"
+puts "Used the '#{pivot_strategy}' strategy"
 puts "Found #{@comparisons} comparisons during processing"
 puts "-----------------------------------------------------------\n"
