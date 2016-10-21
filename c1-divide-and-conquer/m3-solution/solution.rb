@@ -126,7 +126,7 @@ def choose_pivot(a, l, r, pivot_logic)
 
   # choose the pivot randomly
   when 'pivot_is_random'
-      p_index = rand(l..r)
+    p_index = rand(l..r)
 
   # by default we choose the 'pivot_is_median' strategy:
   # choose the pivot as a median among first, middle and last elements (using the "median-of-three" pivot rule)
