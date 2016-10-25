@@ -1,3 +1,5 @@
+# RANDOMIZED CONTRACTION ALGORITHM (Karger's algorithm)
+
 ###########################################################################################################################
 
 # Method for loading an array of data from file
@@ -20,15 +22,11 @@ end
 
 ###########################################################################################################################
 
-input_file = 'kargerMinCut.txt'
-# input_file = 'testArray.txt'
-
-15.times do
-
-  a = load_data input_file
+def get_minimum_cut(a)
 
   # puts "A is #{a}"
 
+  # loop until only two vertices left
   while a.length > 2 do
     # puts
     # puts "======================================================================================="
@@ -36,14 +34,19 @@ input_file = 'kargerMinCut.txt'
     # puts  
     # puts "# of nodes: #{a.length}"  
     # puts
+
+    # choose random vertex
     vertex_index = rand(0..(a.length - 1))
     vertex = a[vertex_index][0]
     # puts "chosen vertex #{vertex_index}: #{a[vertex_index]}"
+
+    # choose random edge
     edge = rand(1..(a[vertex_index].length - 1))
     fused_vertex = a[vertex_index][edge]
     # puts "chosen edge: #{vertex} - #{fused_vertex}"
     fused_vertex_index = nil
 
+    # loop through all vertices and fuse the selected edge
     a.each_with_index do |node_data, node_index|
 
       if node_index == vertex_index
@@ -80,14 +83,36 @@ input_file = 'kargerMinCut.txt'
     a.slice!(fused_vertex_index) 
 
     # puts "result at this iteration: #{a.inspect}"
-
-    result = a[0].length - 1
-    @cuts ||= result
-    @cuts = result if result < @cuts
     # gets
-    
+
   end
+
+  return a[0].length - 1
 
 end
 
-puts "the result is: #{@cuts}"
+###########################################################################################################################
+
+# go through 30 iterations to have high probability of correct result
+def iterate(input_file, number = 30)
+  cut = nil
+  number.times do
+    a = load_data input_file
+    result = get_minimum_cut(a)
+    puts result
+    cut ||= result
+    cut = result if result < cut
+  end
+  return cut
+end
+
+###########################################################################################################################
+
+input_file = 'kargerMinCut.txt'
+# input_file = 'testArray.txt'
+
+result = iterate(input_file)
+
+puts "\n-----------------------------------------------------------"
+puts "The minimum cut is: #{result}"
+puts "-----------------------------------------------------------\n"
