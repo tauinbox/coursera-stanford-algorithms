@@ -20,19 +20,74 @@ end
 
 ###########################################################################################################################
 
-# input_file = 'kargerMinCut.txt'
-input_file = 'testArray.txt'
+input_file = 'kargerMinCut.txt'
+# input_file = 'testArray.txt'
 
-a = load_data input_file
+15.times do
 
-# puts "A is #{a}"
-puts a.inspect
-puts "# of nodes: #{a.length}"
+  a = load_data input_file
 
-while a.length > 2 do
-  vertex = rand(0..(a.length - 1))
-  puts "chosen vertex #{vertex}: #{a[vertex]}"
-  edge = rand(1..(a[vertex].length - 1))
-  puts "chosen edge: #{a[vertex][0]} - #{a[vertex][edge]}"
-  gets
+  # puts "A is #{a}"
+
+  while a.length > 2 do
+    # puts
+    # puts "======================================================================================="
+    # puts a.inspect
+    # puts  
+    # puts "# of nodes: #{a.length}"  
+    # puts
+    vertex_index = rand(0..(a.length - 1))
+    vertex = a[vertex_index][0]
+    # puts "chosen vertex #{vertex_index}: #{a[vertex_index]}"
+    edge = rand(1..(a[vertex_index].length - 1))
+    fused_vertex = a[vertex_index][edge]
+    # puts "chosen edge: #{vertex} - #{fused_vertex}"
+    fused_vertex_index = nil
+
+    a.each_with_index do |node_data, node_index|
+
+      if node_index == vertex_index
+
+        # puts "\n found vertex node #{node_data}, removing [#{fused_vertex}] from it"
+        a[node_index].delete(fused_vertex)
+
+      elsif node_data[0] == fused_vertex
+
+        fused_vertex_index = node_index
+        # puts "\n found fused vertex node #{a[fused_vertex_index]}, removing [#{vertex}] and [#{fused_vertex}] from it"
+
+        a[node_index].delete(vertex)
+        a[node_index].delete(fused_vertex)
+
+      else
+        # replace data with new relations
+        # puts "\n found other node #{node_data}, replace fused vertex [#{fused_vertex}] with new vertex [#{vertex}]"
+        a[node_index].each_with_index do |node, index|
+
+          if node == fused_vertex
+            # puts "\n replace [#{node}] with [#{vertex}]"
+            a[node_index][index] = vertex
+            # puts "node data is #{a[node_index]}"
+          end
+
+        end      
+
+      end
+
+    end
+
+    a[vertex_index] += a[fused_vertex_index]
+    a.slice!(fused_vertex_index) 
+
+    # puts "result at this iteration: #{a.inspect}"
+
+    result = a[0].length - 1
+    @cuts ||= result
+    @cuts = result if result < @cuts
+    # gets
+    
+  end
+
 end
+
+puts "the result is: #{@cuts}"
