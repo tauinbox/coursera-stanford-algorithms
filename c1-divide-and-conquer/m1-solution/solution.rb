@@ -1,9 +1,6 @@
-# Method: Karatsuba multiplication
+# THE KARATSUBA ALGORITHM (Karatsuba multiplication)
 
-# Input data:
-
-x = 3141592653589793238462643383279502884197169399375105820974944592
-y = 2718281828459045235360287471352662497757247093699959574966967627
+###########################################################################################################################
 
 def product(x, y)
 
@@ -13,12 +10,12 @@ def product(x, y)
 
   # define the longest string and set it up as 'n'
   n = [x_string.length, y_string.length].max
-  puts
-  puts("n = #{n}")
+  # puts
+  # puts("n = #{n}")
 
   # return simple product if there are one-digit numbers
   if n == 1
-    puts("return #{x} * #{y} = #{x * y}")
+    # puts("return #{x} * #{y} = #{x * y}")
     return x * y
   end
 
@@ -43,42 +40,52 @@ def product(x, y)
   end
 
   #print out defined attributes
-  puts '=========='
-  puts "x = #{x}, y = #{y}"
-  puts("n/2: #{n.to_f/2} => middle = #{middle}")
-  puts("x length: #{x_string.length}, y length: #{y_string.length}")
-  puts("a,b,c,d: #{a},#{b},#{c},#{d}")
+  # puts '=========='
+  # puts "x = #{x}, y = #{y}"
+  # puts("n/2: #{n.to_f/2} => middle = #{middle}")
+  # puts("x length: #{x_string.length}, y length: #{y_string.length}")
+  # puts("a,b,c,d: #{a},#{b},#{c},#{d}")
 
   # recursive calculations
   ac = product(a, c)
   bd = product(b, d)
-  puts "a + b = #{a} + #{b} = #{a + b}"
-  puts "c + d = #{c} + #{d} = #{c + d}"
+  # puts "a + b = #{a} + #{b} = #{a + b}"
+  # puts "c + d = #{c} + #{d} = #{c + d}"
   gauss_trick = product(a + b, c + d)
 
-  puts '=========='
-  puts("ac - #{ac}")
-  puts("bd - #{bd}")
-  puts("(a+b) * (c+d) = #{gauss_trick}")
-  puts("(ad + bc) = #{gauss_trick} - #{ac} - #{bd} = #{gauss_trick - ac - bd}")
+  # puts '=========='
+  # puts("ac - #{ac}")
+  # puts("bd - #{bd}")
+  # puts("(a+b) * (c+d) = #{gauss_trick}")
+  # puts("(ad + bc) = #{gauss_trick} - #{ac} - #{bd} = #{gauss_trick - ac - bd}")
   gauss_trick = gauss_trick - ac - bd
-  puts("a+b = #{a+b}, c+d = #{c+d}")
+  # puts("a+b = #{a+b}, c+d = #{c+d}")
 
   # the power must be always even, so make it this way
   pow = n / 2
   pow = pow * 2
 
-  puts '========== ac * 10 ^ n ===== (ad + bc) * 10 ^ (n/2) ===== bd'
-  puts ac * (10 ** pow)
-  puts gauss_trick * (10 ** (pow / 2)) 
-  puts bd
-  puts
+  # puts '========== ac * 10 ^ n ===== (ad + bc) * 10 ^ (n/2) ===== bd'
+  # puts ac * (10 ** pow)
+  # puts gauss_trick * (10 ** (pow / 2)) 
+  # puts bd
+  # puts
 
   # the main calculation by Karatsuba method
   return ac * (10 ** pow) + gauss_trick * (10 ** (pow / 2)) + bd
 
 end
 
+###########################################################################################################################
+
+# Input data:
+x = 3141592653589793238462643383279502884197169399375105820974944592
+y = 2718281828459045235360287471352662497757247093699959574966967627
+
 # print out the result:
-puts product(x,y)
+puts "\n X = 3141592653589793238462643383279502884197169399375105820974944592"
+puts " Y = 2718281828459045235360287471352662497757247093699959574966967627"
+puts "\n----------------------------------------------------------------------------------------------------------------------------------------"
+puts " X * Y = #{product(x,y)}"
+puts "----------------------------------------------------------------------------------------------------------------------------------------\n"
 

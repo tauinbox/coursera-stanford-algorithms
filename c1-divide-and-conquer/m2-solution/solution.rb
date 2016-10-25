@@ -1,4 +1,6 @@
 
+# MERGE SORT ALGORITHM
+
 ###########################################################################################################################
 
 def load_data(filename)
@@ -28,6 +30,9 @@ def sort_and_count(a)
   left_half = a[0...middle]
   right_half = a[(middle)...n]
 
+  # puts
+  # puts "left_half is #{left_half}, right_half is #{right_half}"
+
   b = sort_and_count(left_half)
   c = sort_and_count(right_half)
   d = merge_and_count_inversions(b, c, n)
@@ -48,9 +53,6 @@ def merge_and_count_inversions(b, c, n)
   b_empty = c_empty = false
 
   n.times do
-    # puts
-    # puts "left_half is #{left_half}, right_half is #{right_half}"
-
     # puts "i = #{i}, j = #{j}, n = #{n}"
     # puts
 
@@ -122,8 +124,8 @@ input_file = 'IntegerArray.txt'
 
 a = load_data input_file
 
-# puts "++++++++++++++++++++ #{sort_and_count(@a)} +++++++++++++++++"
-sort_and_count(a)
+sorted_array = sort_and_count(a)
+# puts sorted_array
 
 puts "\n-----------------------------------------------------------"
 puts "Found #{@inversions} inversions in input array #{input_file}"
