@@ -13,19 +13,15 @@ class Karger
   # Method for loading an array of data from file
 
   def load_data(filename)
-
     a = []
-    row = 0
 
     if File.exist? filename
       File.foreach (filename) do |line|
-        a[row] = line.chomp.split(/\t/)
-        row += 1
+        a << line.chomp.split(/\t/)
       end
     end
 
     return a
-
   end
 
   ###########################################################################################################################
