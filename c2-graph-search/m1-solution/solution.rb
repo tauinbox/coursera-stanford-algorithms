@@ -66,7 +66,7 @@ class SCC
     @a.length.downto(1) do |n|
       key = n.to_s
       puts "\ns-VERTEX is #{key}"
-      gets
+      # gets
       if !(@a[key][2])
         puts "let's explore this one"
         dfs(key, reverse_flag)
@@ -102,7 +102,7 @@ class SCC
 
     @t += 1
     puts "node = #{node}, t = #{@t}"
-    @order[node] = @t
+    @order[node] = @t.to_s
 
   end
 
