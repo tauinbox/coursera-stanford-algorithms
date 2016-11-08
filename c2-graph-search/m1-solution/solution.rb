@@ -16,9 +16,9 @@ class SCC
 
     # puts @a.length
     populate_inbound_archs
-    # puts @a.length
+    puts @a.length
 
-    dfs_loop(false)
+    dfs_loop(true)
 
   end
 
@@ -62,16 +62,21 @@ class SCC
   end
 
   def dfs_loop(reverse_flag)
-    @a.each do |key, value|
-      puts "key is #{key}"
+    @order = {}
+    @a.length.downto(1) do |n|
+      key = n.to_s
+      puts "\ns-VERTEX is #{key}"
       gets
       if !(@a[key][2])
+        puts "let's explore this one"
         dfs(key, reverse_flag)
       else
         puts "skip from list. we've already been there (#{key})"
       end
       puts "done! go to the next vertex in list"
     end
+
+    puts @order.inspect
   end
 
   def dfs(node, reverse_flag)
@@ -85,14 +90,19 @@ class SCC
     archs = reverse_flag ? 1 : 0
 
     @a[node][archs].each do |hop|
+      puts "looking at neighbours for #{node}, current: #{hop}"
       if !@a[hop][2]
-        @t += 1
-        puts "go deeper!"
+        puts "go deeper!\n\r"
         dfs(hop, reverse_flag)
+        return
       else
         puts "have already been there (#{hop})"
       end
     end
+
+    @t += 1
+    puts "s = #{@s}, t = #{@t}"
+    @order[@s] = @t    
 
   end
 
