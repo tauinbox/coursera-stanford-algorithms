@@ -13,24 +13,16 @@ class SCC
     @a = load_data filedata
     @t = 0
     @s = nil
-    # pp @a
-    # puts @a["875714"].inspect
-    # puts @a.inspect
-    puts @a.length
-    populate_inbound_archs
-    puts
-    puts @a.length
 
-    # @a.each do |key|
-    #   puts key
-    # end
+    # puts @a.length
+    populate_inbound_archs
+    # puts @a.length
 
     dfs_loop(false)
 
   end
 
   # Method for loading an array of data from file
-
   def load_data(filename)
     a = {}
 
@@ -48,6 +40,7 @@ class SCC
     return a
   end
 
+  #expand graph (populate list of all vertices with inbound and outbound arches)
   def populate_inbound_archs
     new_vertices = []
     @a.each do |key, value|
@@ -74,7 +67,10 @@ class SCC
       gets
       if !(@a[key][2])
         dfs(key, reverse_flag)
+      else
+        puts "skip from list. we've already been there (#{key})"
       end
+      puts "done! go to the next vertex in list"
     end
   end
 
@@ -91,7 +87,10 @@ class SCC
     @a[node][archs].each do |hop|
       if !@a[hop][2]
         @t += 1
+        puts "go deeper!"
         dfs(hop, reverse_flag)
+      else
+        puts "have already been there (#{hop})"
       end
     end
 
