@@ -83,7 +83,7 @@ class SCC
     # mark node as explored
     @a[node][2] = true
     # remember the origin
-    @s = node
+    # @s = node
 
     puts "now we are in #{node}"
 
@@ -94,15 +94,15 @@ class SCC
       if !@a[hop][2]
         puts "go deeper!\n\r"
         dfs(hop, reverse_flag)
-        return
+        puts "\n...backtrace to #{node}\n\r"
       else
         puts "have already been there (#{hop})"
       end
     end
 
     @t += 1
-    puts "s = #{@s}, t = #{@t}"
-    @order[@s] = @t    
+    puts "node = #{node}, t = #{@t}"
+    @order[node] = @t
 
   end
 
