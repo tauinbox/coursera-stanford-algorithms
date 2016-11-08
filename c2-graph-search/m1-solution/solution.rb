@@ -7,10 +7,12 @@
 
 class SCC
 
-  attr_reader :mincut
+  # attr_reader :mincut
 
   def initialize(filedata)
     @a = load_data filedata
+    @t = 0
+    @s = nil
     # pp @a
     # puts @a["875714"].inspect
     # puts @a.inspect
@@ -23,8 +25,8 @@ class SCC
     #   puts key
     # end
 
-    # puts @a["875714"].inspect
-    # puts @a["4"].inspect
+    dfs_loop(false)
+
   end
 
   # Method for loading an array of data from file
@@ -64,6 +66,35 @@ class SCC
     new_vertices.each do |data|
       @a[data[0]] = data[1]
     end
+  end
+
+  def dfs_loop(reverse_flag)
+    @a.each do |key, value|
+      puts "key is #{key}"
+      gets
+      if !(@a[key][2])
+        dfs(key, reverse_flag)
+      end
+    end
+  end
+
+  def dfs(node, reverse_flag)
+    # mark node as explored
+    @a[node][2] = true
+    # remember the origin
+    @s = node
+
+    puts "now we are in #{node}"
+
+    archs = reverse_flag ? 1 : 0
+
+    @a[node][archs].each do |hop|
+      if !@a[hop][2]
+        @t += 1
+        dfs(hop, reverse_flag)
+      end
+    end
+
   end
 
 
