@@ -19,6 +19,11 @@ class SCC
     puts @a.length
 
     dfs_loop(true)
+    @a = replace_by_finishing_times
+    GC.start
+    puts
+    puts @a.inspect
+    dfs_loop(false)
 
   end
 
@@ -56,26 +61,32 @@ class SCC
         end
       end
     end
+    # insert vertices having any inbound or outbound arches into graph hash
     new_vertices.each do |data|
       @a[data[0]] = data[1]
     end
   end
 
   def dfs_loop(reverse_flag)
+    scc_list = []
+    reverse_flag ? puts("\n... STARTING 1st PASS\n") : puts("\n... STARTING 2nd PASS\n")
     @order = {}
     @a.length.downto(1) do |n|
       puts "\ns-VERTEX is #{n}"
       # gets
       if !(@a[n][2])
         puts "let's explore this one"
-        dfs(n, reverse_flag)
+        number_of_elements_in_route = dfs(n, reverse_flag)
+        scc_list << number_of_elements_in_route
+        puts "\n[Leader] - #{@s}, explored #{number_of_elements_in_route} elements\n\r" if !reverse_flag
       else
         puts "skip from list. we've already been there (#{n})"
       end
       puts "done! go to the next vertex in list"
     end
 
-    puts @order.inspect
+    puts "\nFinishing times data: \n#{@order.inspect}"
+    puts "\nArray of SCC counts:\n", scc_list.inspect if !reverse_flag
   end
 
   def dfs(node, reverse_flag)
@@ -83,7 +94,8 @@ class SCC
     # mark node as explored
     @a[node][2] = true
     # remember the origin
-    # @s = node
+    @s = node
+    counter = 0
 
     puts "now we are in #{node}"
 
@@ -94,6 +106,9 @@ class SCC
 
     # main cycle through stack
     while route.length > 0
+
+      # increase counter on each search
+      counter += 1
       puts "looking for neighbours for #{route.last}"
 
       chosen = choose_unexplored_neighbour(route.last, arches)
@@ -101,6 +116,10 @@ class SCC
       if !chosen
         puts "nothing found there, backtrace"
 
+        # decrease counter if no unexplored element found 
+        counter -= 1
+
+        # increase @t if no unexplored element found
         @t += 1
         puts "node = #{route.last}, t = #{@t}"
         # add to order list
@@ -114,8 +133,11 @@ class SCC
 
     end
 
+    # +1 because of 1st element in group which we had marked as explored on start
+    return counter + 1
   end
 
+  # arches parameter is used for choosing inbound or outbound arches (forward or reverse graph)
   def choose_unexplored_neighbour(node, arches)
     @a[node][arches].each do |vertex|
       if !@a[vertex][2]
@@ -128,6 +150,21 @@ class SCC
     return false
   end
 
+  def replace_by_finishing_times
+    result = {}
+    @a.each do |key, value|
+      replaced_arches = []
+      value[0].each do |node|
+        replaced_arches << @order[node]
+      end
+      result[@order[key]] = Array.new if !result[@order[key]]
+      result[@order[key]][0] = Array.new if !result[@order[key]][0]
+      result[@order[key]][0] = replaced_arches
+      result[@order[key]][1] = Array.new if !result[@order[key]][1]
+      result[@order[key]][2] = false
+    end
+    return result
+  end
 
 end
 
