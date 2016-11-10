@@ -16,14 +16,16 @@ class SCC
 
     # puts @a.length
     populate_inbound_archs
-    puts @a.length
+    puts "\nThe graph has #{@a.length} vertices"
 
     dfs_loop(true)
     @a = replace_by_finishing_times
     GC.start
-    puts
-    puts @a.inspect
-    dfs_loop(false)
+    # puts
+    # puts @a.inspect
+    scc_list = dfs_loop(false)
+    scc_list.sort!.reverse!
+    puts "\nSizes of the 5 largest SCCs in the given graph: #{scc_list[0..4].join(',')}"
 
   end
 
@@ -72,21 +74,21 @@ class SCC
     reverse_flag ? puts("\n... STARTING 1st PASS\n") : puts("\n... STARTING 2nd PASS\n")
     @order = {}
     @a.length.downto(1) do |n|
-      puts "\ns-VERTEX is #{n}"
+      # puts "\ns-VERTEX is #{n}"
       # gets
       if !(@a[n][2])
-        puts "let's explore this one"
+        # puts "let's explore this one"
         number_of_elements_in_route = dfs(n, reverse_flag)
-        scc_list << number_of_elements_in_route
-        puts "\n[Leader] - #{@s}, explored #{number_of_elements_in_route} elements\n\r" if !reverse_flag
+        scc_list << number_of_elements_in_route if number_of_elements_in_route > 1
+        # puts "\n[Leader] - #{@s}, explored #{number_of_elements_in_route} elements\n\r" if !reverse_flag
       else
-        puts "skip from list. we've already been there (#{n})"
+        # puts "skip from list. we've already been there (#{n})"
       end
-      puts "done! go to the next vertex in list"
+      # puts "done! go to the next vertex in list"
     end
 
-    puts "\nFinishing times data: \n#{@order.inspect}"
-    puts "\nArray of SCC counts:\n", scc_list.inspect if !reverse_flag
+    # puts "\nFinishing times data: \n#{@order.inspect}"
+    return reverse_flag ? nil : scc_list
   end
 
   def dfs(node, reverse_flag)
@@ -97,7 +99,7 @@ class SCC
     @s = node
     counter = 0
 
-    puts "now we are in #{node}"
+    # puts "now we are in #{node}"
 
     # put this node to stack
     route << node
@@ -109,25 +111,25 @@ class SCC
 
       # increase counter on each search
       counter += 1
-      puts "looking for neighbours for #{route.last}"
+      # puts "looking for neighbours for #{route.last}"
 
       chosen = choose_unexplored_neighbour(route.last, arches)
 
       if !chosen
-        puts "nothing found there, backtrace"
+        # puts "nothing found there, backtrace"
 
         # decrease counter if no unexplored element found 
         counter -= 1
 
         # increase @t if no unexplored element found
         @t += 1
-        puts "node = #{route.last}, t = #{@t}"
+        # puts "node = #{route.last}, t = #{@t}"
         # add to order list
         @order[route.last] = @t
 
         route.pop
       else
-        puts "we found #{chosen}, go deeper!\n\r"
+        # puts "we found #{chosen}, go deeper!\n\r"
         route << chosen
       end
 
@@ -170,8 +172,8 @@ end
 
 ###########################################################################################################################
 
-# input_file = 'SCC.txt'
-input_file = 'testArray.txt'
+input_file = 'SCC.txt'
+# input_file = 'testArray.txt'
 
 result = SCC.new(input_file)
 
