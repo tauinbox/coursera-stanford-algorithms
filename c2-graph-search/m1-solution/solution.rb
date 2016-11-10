@@ -5,28 +5,41 @@
 
 ###########################################################################################################################
 
-class SCC
+class Kosaraju
 
-  # attr_reader :mincut
+  attr_reader :top_5_sizes
 
   def initialize(filedata)
+
+    # init graph by loading data from file
     @a = load_data filedata
     @t = 0
     @s = nil
 
     # puts @a.length
+
+    # expand graph data
     populate_inbound_archs
     puts "\nThe graph has #{@a.length} vertices"
 
+    # start first pass (reverse flag is switched on)
     dfs_loop(true)
+
+    # convert graph in accordance to finishing times
     @a = replace_by_finishing_times
+
+    # start ruby garbage collector
     GC.start
+
     # puts
     # puts @a.inspect
+
+    # start second pass which returns the list of all sizes of SCCs (reverse flag is switched off)
     scc_list = dfs_loop(false)
     scc_list.sort!.reverse!
-    puts "\nSizes of the 5 largest SCCs in the given graph: #{scc_list[0..4].join(',')}"
 
+    # set final result
+    @top_5_sizes = scc_list[0..4].join(',')
   end
 
   # Method for loading an array of data from file
@@ -47,7 +60,7 @@ class SCC
     return a
   end
 
-  #expand graph (populate list of all vertices with inbound and outbound arches)
+  #expand graph (populate the list of all vertices with inbound and outbound arches)
   def populate_inbound_archs
     new_vertices = []
     @a.each do |key, value|
@@ -79,6 +92,8 @@ class SCC
       if !(@a[n][2])
         # puts "let's explore this one"
         number_of_elements_in_route = dfs(n, reverse_flag)
+
+        # discard all one-size sequences
         scc_list << number_of_elements_in_route if number_of_elements_in_route > 1
         # puts "\n[Leader] - #{@s}, explored #{number_of_elements_in_route} elements\n\r" if !reverse_flag
       else
@@ -92,11 +107,17 @@ class SCC
   end
 
   def dfs(node, reverse_flag)
+
+    # stack initialized
     route = []
+
     # mark node as explored
     @a[node][2] = true
-    # remember the origin
+
+    # remember the origin node
     @s = node
+
+    # init counter to zero
     counter = 0
 
     # puts "now we are in #{node}"
@@ -106,7 +127,7 @@ class SCC
 
     arches = reverse_flag ? 1 : 0
 
-    # main cycle through stack
+    # main cycle through the stack
     while route.length > 0
 
       # increase counter on each search
@@ -124,12 +145,16 @@ class SCC
         # increase @t if no unexplored element found
         @t += 1
         # puts "node = #{route.last}, t = #{@t}"
-        # add to order list
+
+        # add to order list (finding times)
         @order[route.last] = @t
 
+        # pop out from the stack
         route.pop
       else
         # puts "we found #{chosen}, go deeper!\n\r"
+
+        #push in to the stack
         route << chosen
       end
 
@@ -175,8 +200,8 @@ end
 input_file = 'SCC.txt'
 # input_file = 'testArray.txt'
 
-result = SCC.new(input_file)
+scc = Kosaraju.new(input_file)
 
-# puts "\n-----------------------------------------------------------"
-
-# puts "-----------------------------------------------------------\n"
+puts "\n----------------------------------------------------------------------"
+puts "\nSizes of the 5 largest SCCs in the given graph: #{scc.top_5_sizes}"
+puts "----------------------------------------------------------------------\n"
