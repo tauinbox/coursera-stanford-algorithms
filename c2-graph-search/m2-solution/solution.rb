@@ -24,19 +24,21 @@ class Dijkstra
     start_vertex = 1
     @x[start_vertex] = true
     @a[start_vertex] = 0
-    @b[start_vertex] = start_vertex
+    @b[start_vertex] = [start_vertex]
     # puts @x
 
     search_path
 
     puts "final result. @a = #{@a.inspect}"
 
-    # @distances = []
-    # [7,37,59,82,99,115,133,165,188,197].each do |node|
-    #   @distances << @a[node] 
-    # end
+    @distances = []
+    [7,37,59,82,99,115,133,165,188,197].each do |node|
+      @distances << @a[node]
+      # puts @b[node].inspect
+      # puts
+    end
 
-    # puts @distances.join(',')
+    puts @distances.join(',')
 
   end
 
@@ -56,7 +58,7 @@ class Dijkstra
       puts "\n============================================================"
       puts "[@x.length = #{@x.length}, @graph.length = #{@graph.length}]\n\r"
       greedy_choose_one
-      gets
+      # gets
     end 
     greedy_choose_one
   end
@@ -104,8 +106,12 @@ class Dijkstra
 
       # add result to @x
       @x[link[result[0]]] = true
+
       @a[link[result[0]]] = @a[result[0]] + result[1]
+      @b[link[result[0]]] = @b[result[0]] + [link[result[0]]]
+
       puts "\nadded result for #{link[result[0]]}, a = #{@a[link[result[0]]]}\n\r"
+      puts "\npath for #{link[result[0]]}, @b = #{@b[link[result[0]]]}\n\r"
 
       frontier.each do |node|
         if all_neighbours_in_x?(node)
