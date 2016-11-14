@@ -29,6 +29,15 @@ class Dijkstra
 
     search_path
 
+    puts "final result. @a = #{@a.inspect}"
+
+    # @distances = []
+    # [7,37,59,82,99,115,133,165,188,197].each do |node|
+    #   @distances << @a[node] 
+    # end
+
+    # puts @distances.join(',')
+
   end
 
   # Method for loading data from file
@@ -47,11 +56,9 @@ class Dijkstra
       puts "\n============================================================"
       puts "[@x.length = #{@x.length}, @graph.length = #{@graph.length}]\n\r"
       greedy_choose_one
+      gets
     end 
-
     greedy_choose_one
-
-    puts "final result. @a = #{@a.inspect}"
   end
 
   def greedy_choose_one
@@ -77,12 +84,12 @@ class Dijkstra
 
       # combine all nearests in one selector
       if nearest
-        selector[nearest[0]] = nearest[1]
+        selector[node] = nearest[1]
 
-        link[nearest[0]] = node
+        link[node] = nearest[0]
 
-        puts "found one: #{nearest}, overall: #{selector.inspect}"
-        puts "edge: #{nearest[0]} - #{link[nearest[0]]}"
+        puts "\nfound one: #{nearest}, overall: #{selector.inspect}"
+        puts "edge: #{node} - #{nearest[0]}\n\r"
       else
         puts "Can't find any outter neighbours for #{node}"
       end
@@ -93,14 +100,12 @@ class Dijkstra
 
     if result
       puts "result is #{result}, let's add it to @x"
-      puts "draw the route from: #{link[result[0]]} to #{result[0]}"
+      puts "draw the route from: #{result[0]} to #{link[result[0]]} with length #{result[1]}"
 
       # add result to @x
-      @x[result[0]] = true
-      @a[result[0]] = @a[link[result[0]]] + result[1]
-      puts "\nadded result for #{result[0]}, a = #{@a[result[0]]}\n\r"
-
-      puts "@x now is: #{@x.inspect}"
+      @x[link[result[0]]] = true
+      @a[link[result[0]]] = @a[result[0]] + result[1]
+      puts "\nadded result for #{link[result[0]]}, a = #{@a[link[result[0]]]}\n\r"
 
       frontier.each do |node|
         if all_neighbours_in_x?(node)
@@ -108,6 +113,9 @@ class Dijkstra
           @x[node] = false
         end
       end
+
+      puts "\n@x now is: #{@x.inspect}"
+
     end
 
   end
