@@ -11,26 +11,131 @@ class Dijkstra
   def initialize(filedata)
 
     # init graph by loading data from file
-    @a = load_data filedata
+    @graph = {}
+    load_data filedata
+    @x = {}
+    @a = {}
+    @b = {}
 
-    puts @a.inspect
+    # puts @graph.inspect
+    # puts @graph.length
+
+    #put first vertex into X
+    start_vertex = 1
+    @x[start_vertex] = true
+    @a[start_vertex] = 0
+    @b[start_vertex] = start_vertex
+    # puts @x
+
+    search_path
 
   end
 
-  # Method for loading an array of data from file
+  # Method for loading data from file
   def load_data(filename)
-    a = {}
-
     if File.exist? filename
       File.foreach (filename) do |line|
         line = line.chomp.split(/\t/)
         data = line[1..line.length].map {|pair| [pair.split(',')[0].to_i, pair.split(',')[1].to_i]}
-        a[line[0].to_i] = Hash[data]
+        @graph[line[0].to_i] = Hash[data]
+      end
+    end
+  end
 
+  def search_path
+    while @x.length < @graph.length do
+      puts "\n============================================================"
+      puts "[@x.length = #{@x.length}, @graph.length = #{@graph.length}]\n\r"
+      greedy_choose_one
+    end 
+
+    greedy_choose_one
+
+    puts "final result. @a = #{@a.inspect}"
+  end
+
+  def greedy_choose_one
+    # pick the frontier ones
+    frontier = []
+
+    @x.each do |key, value|
+      if value 
+        frontier << key
       end
     end
 
-    return a
+    puts "frontier: #{frontier}"
+
+    selector = {}
+    link = {}
+
+    frontier.each do |node|
+      puts "looking for the nearest neighbour for #{node}..."
+
+      # find nearest for each frontier node
+      nearest = get_nearest_neighbour(node)
+
+      # combine all nearests in one selector
+      if nearest
+        selector[nearest[0]] = nearest[1]
+
+        link[nearest[0]] = node
+
+        puts "found one: #{nearest}, overall: #{selector.inspect}"
+        puts "edge: #{nearest[0]} - #{link[nearest[0]]}"
+      else
+        puts "Can't find any outter neighbours for #{node}"
+      end
+    end
+
+    # greedy search result
+    result = selector.min_by{|k, v| v}
+
+    if result
+      puts "result is #{result}, let's add it to @x"
+      puts "draw the route from: #{link[result[0]]} to #{result[0]}"
+
+      # add result to @x
+      @x[result[0]] = true
+      @a[result[0]] = @a[link[result[0]]] + result[1]
+      puts "\nadded result for #{result[0]}, a = #{@a[result[0]]}\n\r"
+
+      puts "@x now is: #{@x.inspect}"
+
+      frontier.each do |node|
+        if all_neighbours_in_x?(node)
+          puts "all neighbours for #{node} are already in @x"
+          @x[node] = false
+        end
+      end
+    end
+
+  end
+
+  def get_nearest_neighbour(node)
+    hash = @graph[node]
+
+    # delete nodes which is already in x
+    @x.each do |key, value|
+      hash.delete(key) if hash.key?(key)
+    end
+
+    hash.min_by {|k, v| v}
+  end
+
+  def all_neighbours_in_x?(node)
+    done = true
+    @graph[node].each do |neighbour|
+      # puts "analysing #{node}, looking for neighbour #{neighbour[0]}"
+      if !@x.key?(neighbour[0])
+        # puts "there is no #{neighbour[0]} in @x"
+        done = false
+      else
+        # puts "found #{neighbour[0]} in @x"
+      end
+    end
+    # puts "\nAll neighbours are in x for #{node}!\n\r" if done
+    return done
   end
 
 
