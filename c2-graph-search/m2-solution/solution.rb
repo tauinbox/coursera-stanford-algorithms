@@ -31,14 +31,14 @@ class Dijkstra
 
     puts "final result. @a = #{@a.inspect}"
 
-    @distances = []
-    [7,37,59,82,99,115,133,165,188,197].each do |node|
-      @distances << @a[node]
-      # puts @b[node].inspect
-      # puts
-    end
+    # @distances = []
+    # [7,37,59,82,99,115,133,165,188,197].each do |node|
+    #   @distances << @a[node]
+    #   puts "\npath: #{@b[node].inspect}, length = #{@a[node]}"
+    # end
 
-    puts @distances.join(',')
+    # puts
+    # puts @distances.join(',')
 
   end
 
@@ -58,7 +58,7 @@ class Dijkstra
       puts "\n============================================================"
       puts "[@x.length = #{@x.length}, @graph.length = #{@graph.length}]\n\r"
       greedy_choose_one
-      # gets
+      gets
     end 
     greedy_choose_one
   end
@@ -85,13 +85,17 @@ class Dijkstra
       nearest = get_nearest_neighbour(node)
 
       # combine all nearests in one selector
+
+      # nearest[1] - distance
+      # nearest[0] - found vertex
+
       if nearest
-        selector[node] = nearest[1]
+        selector[node] = nearest[1] + @a[node]
 
         link[node] = nearest[0]
 
         puts "\nfound one: #{nearest}, overall: #{selector.inspect}"
-        puts "edge: #{node} - #{nearest[0]}\n\r"
+        puts "edge: #{node} - #{nearest[0]}, length = #{@a[node]} + #{nearest[1]} = #{@a[node] + nearest[1]}\n\r"
       else
         puts "Can't find any outter neighbours for #{node}"
       end
@@ -107,7 +111,7 @@ class Dijkstra
       # add result to @x
       @x[link[result[0]]] = true
 
-      @a[link[result[0]]] = @a[result[0]] + result[1]
+      @a[link[result[0]]] = result[1]
       @b[link[result[0]]] = @b[result[0]] + [link[result[0]]]
 
       puts "\nadded result for #{link[result[0]]}, a = #{@a[link[result[0]]]}\n\r"
