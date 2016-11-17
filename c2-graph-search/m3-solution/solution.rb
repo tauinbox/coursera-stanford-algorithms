@@ -18,7 +18,7 @@ end
 
 class MedianMaintenance
 
-  attr_reader :result
+  attr_reader :sum_of_medians
 
   def initialize(filedata)
 
@@ -56,6 +56,11 @@ class MedianMaintenance
       insert_high(@stream[0])
     end
 
+    median = (get_min + get_max).to_f / 2
+    @sum_of_medians = median
+
+    puts "\nMedian is #{median}, Sum = #{@sum_of_medians}"
+
     @stream[2..@stream.length].each_with_index do |key, index|
 
       if key < get_max
@@ -69,9 +74,20 @@ class MedianMaintenance
       insert_low(extract_min) if (@heap_high.length - @heap_low.length > 1)
       insert_high(extract_max) if (@heap_low.length - @heap_high.length > 1)
 
+      if @heap_low.length == @heap_high.length
+        median = (get_min + get_max).to_f / 2
+      elsif @heap_low.length < @heap_high.length
+        median = get_min.to_f
+      else
+        median = get_max.to_f
+      end
+
+      @sum_of_medians += median
+
       puts "\n...checking for balance - Hlow length: #{@heap_low.length}, Hhigh length: #{@heap_high.length}\nHlow:  #{@heap_low.inspect}\nHhigh: #{@heap_high.inspect}"
+      puts "Median is #{median}, Sum = #{@sum_of_medians}"
       gets
-    end   
+    end
 
   end
 
