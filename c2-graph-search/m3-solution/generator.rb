@@ -1,4 +1,4 @@
-data = Array(1..100)
+data = Array(1..40)
 
 File.open("testArray.txt", 'w') do |f|
   data.length.times do
