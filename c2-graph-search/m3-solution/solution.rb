@@ -168,7 +168,7 @@ class MedianMaintenance
   end
 
   def parent(heap, index)
-    index > 0 ? [heap[index / 2], index / 2] : false
+    index > 0 ? [heap[((index-1)/2).floor], ((index - 1) / 2).floor] : false
   end
 
   def left_child(heap, index)
