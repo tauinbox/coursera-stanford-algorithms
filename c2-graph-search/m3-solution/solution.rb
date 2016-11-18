@@ -30,8 +30,12 @@ class MedianMaintenance
 
     @stream = []
 
+    @sum_of_medians = 0
+
     # initialize data from file
     load_data filedata
+
+    puts @stream.length
 
     process_stream
 
@@ -48,57 +52,85 @@ class MedianMaintenance
 
   def process_stream
 
-    if @stream[0] < @stream[1]
-      insert_low(@stream[0])
-      insert_high(@stream[1])
-    else
-      insert_low(@stream[1])
-      insert_high(@stream[0])
-    end
-
-    median = (get_min + get_max).to_f / 2
-    @sum_of_medians = median
-
-    puts "\nMedian is #{median}, Sum = #{@sum_of_medians}"
-
-    @stream[2..@stream.length].each_with_index do |key, index|
-
-      if key < get_max
-        insert_low(key)
-      else
-        insert_high(key)
-      end
-
-      puts "-----------------------------\n[#{index + 3}] Now we have:\nHlow:  #{@heap_low.inspect}\nHhigh: #{@heap_high.inspect}"
-
-      insert_low(extract_min) if (@heap_high.length - @heap_low.length > 1)
-      insert_high(extract_max) if (@heap_low.length - @heap_high.length > 1)
-
-      if @heap_low.length == @heap_high.length
-        median = (get_min + get_max).to_f / 2
-      elsif @heap_low.length < @heap_high.length
-        median = get_min.to_f
-      else
-        median = get_max.to_f
-      end
-
+    # File.open("median_data.txt", 'w') do |f|
+    
+      median = @stream[0]
       @sum_of_medians += median
 
-      puts "\n...checking for balance - Hlow length: #{@heap_low.length}, Hhigh length: #{@heap_high.length}\nHlow:  #{@heap_low.inspect}\nHhigh: #{@heap_high.inspect}"
-      puts "Median is #{median}, Sum = #{@sum_of_medians}"
-      gets
-    end
+      # f.puts "#{median}, #{sum_of_medians}"
+
+      puts "\nreceived #{@stream[0]}"
+      puts "\n[1] Median is #{median}, Sum = #{@sum_of_medians}"
+
+      if @stream[0] < @stream[1]
+        insert_low(@stream[0])
+        insert_high(@stream[1])
+      else
+        insert_low(@stream[1])
+        insert_high(@stream[0])
+      end
+
+      median = get_max
+      @sum_of_medians += median
+
+      # f.puts "#{median}, #{sum_of_medians}"
+
+      puts "\nreceived #{@stream[1]}"
+      puts "\n[2] Median is #{median}, Sum = #{@sum_of_medians}"
+
+      puts "\nNow we have:\nHlow (#{@heap_low.length}): #{@heap_low.inspect}\nHhigh(#{@heap_high.length}): #{@heap_high.inspect}\n\r"      
+
+      @stream[2..@stream.length].each_with_index do |key, index|
+
+        puts "------------------------------------------------------------\nreceived #{key}\n\r"
+
+        if key < get_max
+          puts "...sending it to Hlow"
+          insert_low(key)
+        else
+          puts "...sending it to Hhigh"
+          insert_high(key)
+        end
+
+        puts "\nNow we have:\nHlow (#{@heap_low.length}): #{@heap_low.inspect}\nHhigh(#{@heap_high.length}): #{@heap_high.inspect}\n\r"
+
+        if (@heap_high.length - @heap_low.length > 1)
+          puts "[BALANCING -> LOW] Take out #{get_min} from Hhigh and send it to Hlow"
+          insert_low(extract_min)
+        elsif (@heap_low.length - @heap_high.length > 1)
+          puts "[BALANCING -> HIGH] Take out #{get_max} from Hlow and send it to Hhigh"
+          insert_high(extract_max)
+        end
+
+        if @heap_low.length == @heap_high.length
+          median = get_max
+        elsif @heap_low.length < @heap_high.length
+          median = get_min
+        else
+          median = get_max
+        end
+
+        @sum_of_medians += median
+
+        puts "\nHlow (#{@heap_low.length}): #{@heap_low.inspect}\nHhigh(#{@heap_high.length}): #{@heap_high.inspect}\n"
+        puts "\n[#{index + 3}] Median is #{median}, Sum = #{@sum_of_medians}"
+        gets
+        # f.puts "#{median}, #{sum_of_medians}"
+      end
+    # end
 
   end
 
   # max-heap (@heap_low)
   def insert_low(key)
+    puts "[INSERT TO LOW] add #{key} to the end of LOW heap"
     @heap_low << key
     heapify_low(@heap_low.length - 1)
   end
 
   # min-heap (@heap_high)
   def insert_high(key)
+    puts "[INSERT TO HIGH] add #{key} to the end of HIGH heap"
     @heap_high << key
     heapify_high(@heap_high.length - 1)
   end
@@ -108,6 +140,7 @@ class MedianMaintenance
     parent = parent(@heap_low, index)
     if parent
       if parent[0] < @heap_low[index]
+        puts "[HEAPIFY LOW] swap node (#{index}) #{@heap_low[index]} with parent (#{parent[1]}) #{parent[0]}"
         @heap_low.swap!(parent[1], index)
         heapify_low(parent[1])
       end
@@ -119,6 +152,7 @@ class MedianMaintenance
     parent = parent(@heap_high, index)
     if parent
       if parent[0] > @heap_high[index]
+        puts "[HEAPIFY HIGH] swap node (#{index}) #{@heap_high[index]} with parent (#{parent[1]}) #{parent[0]}"
         @heap_high.swap!(parent[1], index)
         heapify_high(parent[1])
       end
@@ -165,21 +199,30 @@ class MedianMaintenance
     left_child = left_child(@heap_high, index)
     right_child = right_child(@heap_high, index)
 
+    puts "[- MIN] restoring from node (#{index}) #{@heap_high[index]}"
+
     if left_child && right_child
+      puts "[- MIN] left_child (#{left_child[1]}) #{left_child[0]}, right_child (#{right_child[1]}) #{right_child[0]}"
       if left_child[0] < right_child[0]
+        puts "[- MIN] chosen left_child (#{left_child[1]}) #{left_child[0]} instead of right_child (#{right_child[1]}) #{right_child[0]}"
         child_to_compare = left_child
       else
+        puts "[- MIN] chosen right_child (#{right_child[1]}) #{right_child[0]} instead of left_child (#{left_child[1]}) #{left_child[0]}"
         child_to_compare = right_child
       end
     elsif left_child && !right_child
+      puts "[- MIN] chosen left_child (#{left_child[1]}) #{left_child[0]}"
       child_to_compare = left_child
     elsif !left_child && right_child
+      puts "[- MIN] chosen right_child (#{right_child[1]}) #{right_child[0]}"
       child_to_compare = right_child
     else
+      puts "[- MIN] no children found, return!"
       return
     end
 
     if child_to_compare[0] < @heap_high[index]
+      puts "[- MIN] swap (#{child_to_compare[1]}) #{child_to_compare[0]} with parent (#{index}) #{@heap_high[index]}"
       @heap_high.swap!(index, child_to_compare[1])
       restore_after_extraction_min(child_to_compare[1])
     end
@@ -189,21 +232,30 @@ class MedianMaintenance
     left_child = left_child(@heap_low, index)
     right_child = right_child(@heap_low, index)
 
+    puts "[- MAX] restoring from node (#{index}) #{@heap_low[index]}"
+
     if left_child && right_child
+      puts "[- MAX] left_child (#{left_child[1]}) #{left_child[0]}, right_child (#{right_child[1]}) #{right_child[0]}"
       if left_child[0] > right_child[0]
+        puts "[- MAX] chosen left_child (#{left_child[1]}) #{left_child[0]} instead of right_child (#{right_child[1]}) #{right_child[0]}"
         child_to_compare = left_child
       else
+        puts "[- MAX] chosen right_child (#{right_child[1]}) #{right_child[0]} instead of left_child (#{left_child[1]}) #{left_child[0]}"
         child_to_compare = right_child
       end
     elsif left_child && !right_child
+      puts "[- MAX] chosen left_child (#{left_child[1]}) #{left_child[0]}"
       child_to_compare = left_child
     elsif !left_child && right_child
+      puts "[- MAX] chosen right_child (#{right_child[1]}) #{right_child[0]}"
       child_to_compare = right_child
     else
+      puts "[- MAX] no children found, return!"
       return
     end
 
     if child_to_compare[0] > @heap_low[index]
+      puts "[- MAX] swap (#{child_to_compare[1]}) #{child_to_compare[0]} with parent (#{index}) #{@heap_high[index]}"
       @heap_low.swap!(index, child_to_compare[1])
       restore_after_extraction_max(child_to_compare[1])
     end    
@@ -213,11 +265,12 @@ end
 
 ###########################################################################################################################
 
-input_file = 'Median.txt'
-# input_file = 'testArray.txt'
+# input_file = 'Median.txt'
+input_file = 'testArray.txt'
 
 solution = MedianMaintenance.new(input_file)
 
-# puts "\n-------------------------------------------------"
-# puts "The sum of given 10000 medians, modulo 10000:\n#{solution.result}"
-# puts "-------------------------------------------------\n"
+puts "\n-------------------------------------------------"
+puts "The sum of given 10000 medians:\n#{solution.sum_of_medians}"
+puts "The sum of given 10000 medians, modulo 10000:\n#{solution.sum_of_medians % 10000}"
+puts "-------------------------------------------------\n"
