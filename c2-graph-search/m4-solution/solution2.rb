@@ -12,25 +12,28 @@ class TwoSum
   attr_reader :number_of_values
 
   def initialize(filedata)
-    @hash = {}
+    @hash1 = {}
+    @hash2 = {}
+
     @number_of_values = 0
 
     # initialize data from file
     load_data filedata
 
-    puts "Hash length: #{@hash.length}"
+    puts "Hash1 length: #{@hash1.length}"
+    puts "Hash2 length: #{@hash2.length}"
 
-    @hash.each_with_index do |(key,value),index|
+    l = @hash2.length
+
+    @hash2.each_with_index do |(key, value), index|
       x = -10000 - key
       y = 10000 - key
 
       x.upto(y) do |i| 
-        if @hash.key?(i)
-          if key <= i
-            @number_of_values += 1
-            percentage = ((index * 100) / 999752).ceil
-            puts "[Index: #{index}] Found #{key} + #{i} = #{key + i}, NUM = #{@number_of_values}, [#{percentage}\% done]"
-          end
+        if @hash1.key?(i)
+          @number_of_values += 1
+          percentage = ((index * 100) / l).ceil
+          puts "[Index: #{index}] Found #{key} + #{i} = #{key + i}, NUM = #{@number_of_values}, [#{percentage}\% done]"
         end
       end
     end
@@ -42,8 +45,9 @@ class TwoSum
     if File.exist? filename
       File.foreach (filename) do |line|
         number = line.chomp.to_i
-        next if @hash.key?(number)
-        @hash[number] = true
+        next if (@hash1.key?(number) || @hash2.key?(number))
+        @hash1[number] = true if number <= 0
+        @hash2[number] = true if number > 0
       end
     end
   end
@@ -59,6 +63,6 @@ input_file = 'algo1-programming_prob-2sum.txt'
 
 solution = TwoSum.new(input_file)
 
-puts "\n-------------------------------------------------"
-puts "The number of target values t in the interval [-10000,10000]: #{solution.number_of_values}"
-puts "-------------------------------------------------\n"
+# puts "\n-------------------------------------------------"
+# puts "The number of target values t in the interval [-10000,10000]: #{solution.number_of_values}"
+# puts "-------------------------------------------------\n"
