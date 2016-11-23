@@ -68,5 +68,5 @@ solution = TwoSum.new(input_file)
 
 puts "\n--------------------------------------------------------------------"
 puts "The number of target values t in the interval [-10000,10000]: #{solution.number_of_values}"
-puts "The number of distinct target values t: #{solution.distinct_targets}"
+puts "The number of distinct target values t: #{solution.distinct_targets.length}"
 puts "--------------------------------------------------------------------\n"
