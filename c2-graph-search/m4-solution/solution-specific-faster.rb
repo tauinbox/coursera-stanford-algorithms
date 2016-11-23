@@ -1,4 +1,4 @@
-# 2-SUM Algorithm
+# 2-SUM Algorithm (variant 2, faster but applicable only for given input set of data)
 
 # The task is to compute the number of target values t in the interval [-10000,10000] (inclusive) 
 # such that there are distinct numbers x,y in the input file that satisfy x+y=t. 
@@ -12,10 +12,17 @@ class TwoSum
   attr_reader :number_of_values, :distinct_targets
 
   def initialize(filedata)
+
+    # hash for negative integers
     @hash1 = {}
+
+    # hash for positive integers
     @hash2 = {}
+
+    # hash for target values
     @distinct_targets = {}
 
+    # counter
     @number_of_values = 0
 
     # initialize data from file
@@ -26,9 +33,11 @@ class TwoSum
 
       @hash1.each_with_index do |(key, value), index|
 
+        # set the interval
         x = -10000 - key
         y = 10000 - key
 
+        # scan through interval
         x.upto(y) do |i| 
           if @hash2.key?(i)
             @number_of_values += 1

@@ -1,4 +1,4 @@
-# 2-SUM Algorithm
+# 2-SUM Algorithm (it takes way too long to complete calculations in Ruby, approximately 5 hours on my PC)
 
 # The task is to compute the number of target values t in the interval [-10000,10000] (inclusive) 
 # such that there are distinct numbers x,y in the input file that satisfy x+y=t. 
@@ -12,9 +12,14 @@ class TwoSum
   attr_reader :number_of_values, :distinct_targets
 
   def initialize(filedata)
+
+    # hash for data
     @hash = {}
+
+    # hash for target values
     @distinct_targets = {}
 
+    # counter
     @number_of_values = 0
 
     # initialize data from file
@@ -27,9 +32,11 @@ class TwoSum
 
       @hash.each_with_index do |(key, value), index|
 
+        # set the interval
         x = -10000 - key
         y = 10000 - key
 
+        # scan through interval
         x.upto(y) do |i| 
           if @hash.key?(i) && (key < i)
             @number_of_values += 1
