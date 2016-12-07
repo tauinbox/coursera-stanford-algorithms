@@ -14,15 +14,16 @@ class JobScheduler
     @sorted_joblist = []
     @sum = 0
 
+    # load raw data from the input file
     @joblist = load_data(filedata)
 
-    # puts @joblist.inspect
-    # puts @number_of_jobs
-
+    # calculate criteria using difference strategy and sort it in decreasing order
     calculate_and_sort_differences
 
+    # schedule jobs in proper order
     schedule_jobs
 
+    # calculate the sum of weighted completion times of the resulting schedule
     calculate_sum
   end
 
@@ -44,10 +45,12 @@ class JobScheduler
     return jobs
   end
 
+  # calculate using difference strategy and sort it in decreasing order
   def calculate_and_sort_differences
     @joblist.each_with_index do |job, index|
       @differences[index] = job[0] - job[1]
     end
+    # sort jobs by differences in decreasing order
     @differences = @differences.sort_by {|k,v| v}.reverse.to_h
   end
 
@@ -73,11 +76,13 @@ class JobScheduler
     sort_jobs_by_weight(jobs_to_sort_by_weight) if jobs_to_sort_by_weight.length > 0
   end
 
+  # sort jobs by weights in decreasing order and add them to @sorted_joblist
   def sort_jobs_by_weight(array)
     jobweights = {}
     array.each do |jobindex|
       jobweights[jobindex] = @joblist[jobindex][0]
     end
+    # sort jobs by weights in decreasing order
     jobweights = jobweights.sort_by {|k,v| v}.reverse.to_h
     jobweights.each do |key, value|
       @sorted_joblist << @joblist[key]
@@ -86,6 +91,7 @@ class JobScheduler
     # gets
   end
 
+  # calculate the sum of scheduled joblist
   def calculate_sum
     completion = 0
     @sorted_joblist.each do |job|
@@ -104,6 +110,6 @@ input_file = 'jobs.txt'
 solution = JobScheduler.new(input_file)
 
 
-puts "\n-------------------------------------------------"
-puts "The sum of weighted completion times: #{solution.sum}"
-puts "-------------------------------------------------\n"
+puts "\n-------------------------------------------------------------------------"
+puts "1. DIFFERENCE STRATEGY. The sum of weighted completion times: #{solution.sum}"
+puts "-------------------------------------------------------------------------\n"
