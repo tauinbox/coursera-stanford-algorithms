@@ -1,5 +1,7 @@
 # Minimizing the weighted sum of completion times algorithm
 
+# Run the greedy algorithm that schedules jobs in decreasing order of the difference (weight - length).
+
 # Report the sum of weighted completion times of the resulting schedule
 
 ###########################################################################################################################
@@ -7,6 +9,12 @@
 class JobScheduler
 
   attr_reader :joblist, :number_of_jobs, :differences, :sorted_joblist, :sum
+
+  # joblist - loaded raw data
+  # number_of_jobs - number of jobs read from input file
+  # differences - sorted hash of job differences
+  # sorted_joblist - properly scheduled jobs
+  # sum - the sum of weighted completion times of the resulting schedule
 
   def initialize(filedata)
     @differences = {}
