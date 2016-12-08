@@ -13,11 +13,16 @@ class Prims
     # init graph by loading data from file
     @graph = {}
     load_data filedata
-    # puts @graph.inspect
+    puts @graph.inspect
     puts @graph.length
 
     # explored verices data with boolean frontier attribute
     @x = {}
+
+    # put first vertex into X
+    start_vertex = 1
+    # set the frontier attrubute to true
+    @x[start_vertex] = true    
 
   end
 
@@ -31,12 +36,10 @@ class Prims
           @num_edges = line[1]
           next
         else
-          data1 = [line[0], line[2]]
-          data2 = [line[1], line[2]]
-          @graph[line[0]] = Array.new if !@graph[line[0]]
-          @graph[line[1]] = Array.new if !@graph[line[1]]
-          @graph[line[0]] << data2
-          @graph[line[1]] << data1
+          @graph[line[0]] = Hash.new if !@graph[line[0]]
+          @graph[line[1]] = Hash.new if !@graph[line[1]]
+          @graph[line[0]][line[1]] = line[2]
+          @graph[line[1]][line[0]] = line[2]
         end
       end
     end
@@ -81,7 +84,7 @@ class Prims
         # nearest[0] - found vertex
         # @a[node] - already calculated distance to node      
 
-        # Dijkstra's greedy criterion
+        # 
         selector[node] = @a[node] + nearest[1]
 
         # link between tail and head (edge)
@@ -162,8 +165,6 @@ input_file = 'edges.txt'
 # input_file = 'testArray.txt'
 
 solution = Prims.new(input_file)
-
-# puts "\nShortest paths data:\nA(s) = #{solution.a}"
 
 puts "\n-------------------------------------------------"
 puts "The overall cost of a minimum spanning tree:\n#{solution.cost}"
