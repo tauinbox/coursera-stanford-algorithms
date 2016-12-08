@@ -24,7 +24,7 @@ class Prims
     # explored verices data with boolean frontier attribute
     # {node1 => frontier_attribute1, node2 => frontier_attribute2, ...}
     @x = {}
-    @t = {}
+    @t = []
     @cost = 0
 
     # put the vertex number 1 into X
@@ -33,6 +33,7 @@ class Prims
     @x[start_vertex] = true
 
     search_mst
+    # puts "T: #{@t.inspect}"
 
   end
 
@@ -113,11 +114,15 @@ class Prims
       # puts "result is #{result}, let's add it to @x"
 
       # add result to @x and set it up the frontier atttribute
-      # link[result[0]] here will get us the vertex to which we found the result
+      # link[result[0]] here is getting us the vertex name to which we found the result
       @x[link[result[0]]] = true
 
       # augment the cost value with found result
       @cost += result[1]
+
+      # t format:
+      # [one_node_of_edge_1, other_node_of_edge_1, edge_1_cost], [one_node_of_edge_2, other_node_of_edge_2, edge_2_cost], ...
+      @t << [result[0], link[result[0]], result[1]]
 
       # puts "Now cost is: #{@cost}"
 
