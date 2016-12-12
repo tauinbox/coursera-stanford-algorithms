@@ -1,4 +1,4 @@
-# Clustering Algorithm.
+# Clustering Algorithm (using Kruskal's MST algorithm).
 
 # Run the clustering algorithm on provided data set, where the target number k of clusters is set to 4.
 # Report the maximum spacing of a 4-clustering
@@ -7,20 +7,19 @@
 
 class Cluster
 
-  attr_reader :num_edges, :num_vertices, :max_spacing
+  attr_reader :edges, :num_vertices, :max_spacing
 
   def initialize(filedata)
 
-    # init undirected graph by loading data from file
-    # graph structure example:
-    # {
-    #  node1 => {node2 => cost, node3 => cost},
-    #  node2 => {node1 => cost, node5 => cost}, ...
-    # }
-    @graph = {}
+    @edges = []
+    @groups = {}
+    @leader_pointers = {}
     load_data filedata
-    # puts @graph.inspect
-    # puts @graph.length
+    puts @groups.inspect
+    puts @leader_pointers.inspect
+    # puts @groups.length
+    # gets
+    # puts @edges.inspect
 
   end
 
@@ -29,18 +28,43 @@ class Cluster
     if File.exist? filename
       File.foreach (filename) do |line|
         line = line.chomp.split(" ").map(&:to_i)
-        if line.length == 2
+        if line.length == 1
           @num_vertices = line[0]
-          @num_edges = line[1]
           next
         else
-          @graph[line[0]] = Hash.new if !@graph[line[0]]
-          @graph[line[1]] = Hash.new if !@graph[line[1]]
-          @graph[line[0]][line[1]] = line[2]
-          @graph[line[1]][line[0]] = line[2]
+          @edges << [line[2], line[0], line[1]]
+          if !@groups[line[0]]
+            @groups[line[0]] = [line[0]]
+            @leader_pointers[line[0]] = line[0]
+          end
+          if !@groups[line[1]]
+            @groups[line[1]] = [line[1]]
+            @leader_pointers[line[1]] = line[1]
+          end          
         end
       end
     end
+    # sort edges costs
+    @edges.sort! { |a, b| a[0] <=> b[0] }
+  end
+
+  def union(node1, node2)
+    group1 = @leader_pointers[node1]
+    group2 = @leader_pointers[node2]
+    if @groups[group1].length <= @groups[group2].length
+      @groups[group1].each do |item|
+        @groups[group2] << item
+        @leader_pointers[item] = group2
+      end
+      @groups.delete(group1)
+    else
+      @groups[group2].each do |item|
+        @groups[group1] << item
+        @leader_pointers[item] = group1
+      end      
+      @groups.delete(group2)
+    end
+
   end
 
 end
