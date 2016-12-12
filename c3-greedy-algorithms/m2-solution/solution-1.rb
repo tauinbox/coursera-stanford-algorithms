@@ -7,20 +7,20 @@
 
 class Cluster
 
-  attr_reader :edges, :num_vertices, :max_spacing
+  attr_reader :edges, :num_vertices, :groups, :max_spacing
 
-  def initialize(filedata)
+  def initialize(filedata, k = 4)
+
+    puts "\nStart searching the maximum spacing of a #{k}-clustering..."
 
     @edges = []
     @groups = {}
     @leader_pointers = {}
-    load_data filedata
-    puts @groups.inspect
-    puts @leader_pointers.inspect
-    # puts @groups.length
-    # gets
-    # puts @edges.inspect
 
+    # setup edges, groups and leader_pointers
+    load_data filedata
+
+    clusterize(k)
   end
 
   # Method for loading data from file
@@ -52,19 +52,53 @@ class Cluster
     group1 = @leader_pointers[node1]
     group2 = @leader_pointers[node2]
     if @groups[group1].length <= @groups[group2].length
+      # group1 happens to be merged and destroyed
+      # puts "\nMove #{@groups[group1].inspect} to #{@groups[group2].inspect}"
       @groups[group1].each do |item|
         @groups[group2] << item
         @leader_pointers[item] = group2
       end
+      # puts "Result: #{@groups[group2].inspect}, Leader: #{group2}"
+      # puts "Delete group #{group1}"
       @groups.delete(group1)
     else
+      # group2 happens to be merged and destroyed
+      # puts "\nMove #{@groups[group2].inspect} to #{@groups[group1].inspect}"
       @groups[group2].each do |item|
         @groups[group1] << item
         @leader_pointers[item] = group1
-      end      
+      end
+      # puts "Result: #{@groups[group1].inspect}, Leader: #{group1}"
+      # puts "Delete group #{group2}"
       @groups.delete(group2)
     end
+  end
 
+  def clusterize(k)
+    found = false
+    last_edge = nil
+        
+    @edges.each do |edge|
+      if found && last_edge != edge[0] && @leader_pointers[edge[1]] != @leader_pointers[edge[2]]
+        @max_spacing = edge
+        break
+      else
+        # if there is no cycle
+        if @leader_pointers[edge[1]] != @leader_pointers[edge[2]]
+          # puts "\nCoalesce 2 vertices: #{edge[1]} and #{edge[2]} with distance between them: #{edge[0]}"
+          # puts "Number of groups: #{@groups.length}"
+
+          union(edge[1], edge[2])
+
+          if @groups.length == k
+            found = true
+            last_edge = edge[0]
+          end
+        else
+          # puts "Found cycle, #{edge[1]} and #{edge[2]} are in the same group: #{@leader_pointers[edge[1]]}"
+        end
+      end              
+    end    
   end
 
 end
@@ -74,8 +108,10 @@ end
 input_file = 'clustering1.txt'
 # input_file = 'testArray.txt'
 
-solution = Cluster.new(input_file)
+solution = Cluster.new(input_file, 4)
 
-puts "\n--------------------------------------------------------------------"
-puts "1. Clustering Algorithm. The maximum spacing of a 4-clustering: #{solution.max_spacing}"
-puts "--------------------------------------------------------------------\n"
+puts "\n-----------------------------------------------------------------------"
+puts "1. Clustering Algorithm. The maximum spacing is #{solution.max_spacing[0]} (nodes #{solution.max_spacing[1]} and #{solution.max_spacing[2]})"
+puts "-----------------------------------------------------------------------\n"
+
+# puts "\nClusters:\n\n#{solution.groups}"
