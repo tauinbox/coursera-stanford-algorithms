@@ -50,7 +50,7 @@ class Cluster
 
   # Method for loading data from file
   def load_data(filename)
-    node_name = 0
+    node_name = 1
     if File.exist? filename
       File.foreach (filename) do |line|
         line = line.chomp.split(" ")
@@ -100,9 +100,10 @@ class Cluster
   def clusterize(spacing)
 
     @edges.each do |edge|
-      if edge[0] == spacing + 1
+      if edge[0] == spacing
         @num_clusters = @groups.length
         puts "Found spacing: #{edge.inspect}"
+        # puts "Groups:\n#{groups.inspect}"
         break
       end
 
