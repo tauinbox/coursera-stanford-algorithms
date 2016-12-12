@@ -13,13 +13,22 @@ class Cluster
 
     puts "\nStart searching the maximum spacing of a #{k}-clustering..."
 
+    # array of edges in format:
+    # [edge 1 cost, edge 1 node 1, edge 1 node 2],
+    # [edge 2 cost, edge 2 node 1, edge 2 node 2],
+    # ...
     @edges = []
+
+    # hash of united groups
     @groups = {}
+
+    # hash of leader pointers
     @leader_pointers = {}
 
     # setup edges, groups and leader_pointers
     load_data filedata
 
+    # clusterize for k clusters and find the maximum spacing
     clusterize(k)
   end
 
@@ -77,7 +86,7 @@ class Cluster
   def clusterize(k)
     found = false
     last_edge = nil
-        
+
     @edges.each do |edge|
       if found && last_edge != edge[0] && @leader_pointers[edge[1]] != @leader_pointers[edge[2]]
         @max_spacing = edge
@@ -88,6 +97,7 @@ class Cluster
           # puts "\nCoalesce 2 vertices: #{edge[1]} and #{edge[2]} with distance between them: #{edge[0]}"
           # puts "Number of groups: #{@groups.length}"
 
+          # let's unite two points
           union(edge[1], edge[2])
 
           if @groups.length == k
