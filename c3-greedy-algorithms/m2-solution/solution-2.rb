@@ -12,7 +12,8 @@ class Cluster
   def initialize(filedata, spacing)
 
     @edges = []
-    @nodes = []
+    @nodes = {}
+    @hamming = []
 
     # hash of united groups
     @groups = {}
@@ -23,17 +24,46 @@ class Cluster
     # setup 
     load_data filedata
 
-    previous = @nodes[0]
-    @nodes.each_with_index do |cost, index|
-      next if index == 0
-      distance = ((cost[0].to_i(2) ^ previous[0].to_i(2)).to_s(2)).count('1')
-      # puts "#{previous} - #{cost}. Diff = #{distance}"
-      # gets
-      @edges << [distance, previous[1], cost[1]]
-      previous = cost
+    puts "Nodes: #{@nodes.length}"
+
+    for i in (0..23)
+      for j in (i..23)
+        bitmask = 1 << i
+        bitmask2 = 1 << j
+        @hamming << (bitmask | bitmask2)
+      end
     end
 
-    @edges.sort!
+    # puts "Hamming: #{@hamming.inspect}"
+    # puts "Hamming length: #{@hamming.length}"
+
+    @nodes.each do |k, v|
+      @leader_pointers[k] = k
+      @groups[k] = [k]
+    end
+
+    @nodes.each do |k, v|
+      closest = closest_for(k)
+      closest.each do |node|
+        if @leader_pointers[k] != @leader_pointers[node]
+          union(k, node)
+        end
+      end
+    end    
+
+    puts "Groups: #{@groups.length}"
+
+    # previous = @nodes[0]
+    # @nodes.each_with_index do |cost, index|
+    #   next if index == 0
+    #   distance = ((cost[0].to_i(2) ^ previous[0].to_i(2)).to_s(2)).count('1')
+    #   # puts "#{previous} - #{cost}. Diff = #{distance}"
+    #   # gets
+    #   @edges << [distance, previous[1], cost[1]]
+    #   previous = cost
+    # end
+
+    # @edges.sort!
     # puts "Edges:\n#{@edges.inspect}"
     # puts "Edges:\n#{@edges.length}"
     # puts "Groups:\n#{@groups.length}"
@@ -44,13 +74,23 @@ class Cluster
 
     # puts @leader_pointers
 
-    clusterize(spacing)
+    # clusterize(spacing)
 
   end
 
+  def closest_for(node)
+    result = []
+    @hamming.each do |number|
+      if @nodes[node ^ number]
+        result << (node ^ number)
+      end
+    end
+    return result
+  end  
+
   # Method for loading data from file
   def load_data(filename)
-    node_name = 1
+    # node_name = 1
     if File.exist? filename
       File.foreach (filename) do |line|
         line = line.chomp.split(" ")
@@ -58,16 +98,16 @@ class Cluster
           @num_vertices = line[0]
           next
         else
-          node = line.join
-          @nodes << [node, node_name]
-          @leader_pointers[node_name] = node_name
-          @groups[node_name] = [node_name]
-          node_name += 1
+          node = line.join.to_i(2)
+          @nodes[node] = true
+          # @leader_pointers[node_name] = node_name
+          # @groups[node] = [node_name]
+          # node_name += 1
         end
       end
     end
     # sort nodes
-    @nodes.sort! { |a, b| a[0] <=> b[0] }
+    # @nodes.sort! { |a, b| a[0] <=> b[0] }
   end
 
   def union(node1, node2)
@@ -76,6 +116,7 @@ class Cluster
 
     if @groups[group1].length <= @groups[group2].length
       # group1 happens to be merged and destroyed
+
       # puts "\nMove #{@groups[group1].inspect} to #{@groups[group2].inspect}"
       @groups[group1].each do |item|
         @groups[group2] << item
@@ -86,6 +127,7 @@ class Cluster
       @groups.delete(group1)
     else
       # group2 happens to be merged and destroyed
+
       # puts "\nMove #{@groups[group2].inspect} to #{@groups[group1].inspect}"
       @groups[group2].each do |item|
         @groups[group1] << item
