@@ -1,19 +1,17 @@
-# Clustering Algorithm (using Kruskal's MST algorithm).
+# Clustering Algorithm.
 
-# Run the clustering algorithm on provided data set, where the target number k of clusters is set to 4.
-# Report the maximum spacing of a 4-clustering
+# The question is: what is the largest value of k such that there is a k-clustering with spacing at least 3? 
+# That is, how many clusters are needed to ensure that no pair of nodes with all but 2 bits in common get split into different clusters?
 
 ###########################################################################################################################
 
 class Cluster
 
-  attr_reader :edges, :num_vertices, :groups, :num_clusters
+  attr_reader :num_vertices, :groups
 
-  def initialize(filedata, spacing)
-
-    @edges = []
+  def initialize(filedata)
+    # a hash of unduplicated nodes
     @nodes = {}
-    @hamming = []
 
     # hash of united groups
     @groups = {}
@@ -21,76 +19,46 @@ class Cluster
     # hash of leader pointers
     @leader_pointers = {}
 
-    # setup 
+    # generate the list of numbers which we'll use by XOR operation to find 2-bits hamming distance
+    @hamming = generate_hamming_array    
+
+    # initialize
     load_data filedata
 
-    puts "Nodes: #{@nodes.length}"
+    puts "\nStart calculating the number of clusters..."
 
-    for i in (0..23)
-      for j in (i..23)
-        bitmask = 1 << i
-        bitmask2 = 1 << j
-        @hamming << (bitmask | bitmask2)
-      end
-    end
-
-    # puts "Hamming: #{@hamming.inspect}"
-    # puts "Hamming length: #{@hamming.length}"
-
-    @nodes.each do |k, v|
-      @leader_pointers[k] = k
-      @groups[k] = [k]
-    end
-
-    @nodes.each do |k, v|
-      closest = closest_for(k)
-      closest.each do |node|
-        if @leader_pointers[k] != @leader_pointers[node]
-          union(k, node)
-        end
-      end
-    end    
-
-    puts "Groups: #{@groups.length}"
-
-    # previous = @nodes[0]
-    # @nodes.each_with_index do |cost, index|
-    #   next if index == 0
-    #   distance = ((cost[0].to_i(2) ^ previous[0].to_i(2)).to_s(2)).count('1')
-    #   # puts "#{previous} - #{cost}. Diff = #{distance}"
-    #   # gets
-    #   @edges << [distance, previous[1], cost[1]]
-    #   previous = cost
-    # end
-
-    # @edges.sort!
-    # puts "Edges:\n#{@edges.inspect}"
-    # puts "Edges:\n#{@edges.length}"
-    # puts "Groups:\n#{@groups.length}"
-
-    # @edges.each do |edge|
-    #   puts edge.inspect
-    # end
-
-    # puts @leader_pointers
-
-    # clusterize(spacing)
-
+    # process data
+    clusterize
   end
 
+  # Find closest nodes which are consisted in @nodes by passing through hamming list with XOR operation
   def closest_for(node)
     result = []
     @hamming.each do |number|
+      # check if (node XOR number) is already in the nodes hash
       if @nodes[node ^ number]
         result << (node ^ number)
       end
     end
     return result
-  end  
+  end
+
+  # generate an array for 2-bits hamming distance (the number of differing bits)
+  # (the number of clusters are needed to ensure that no pair of nodes with all but 2 bits in common get split into different clusters)
+  def generate_hamming_array
+    data = []
+    for i in (0..23)
+      for j in (i..23)
+        bitmask = 1 << i
+        bitmask2 = 1 << j
+        data << (bitmask | bitmask2)
+      end
+    end
+    return data
+  end 
 
   # Method for loading data from file
   def load_data(filename)
-    # node_name = 1
     if File.exist? filename
       File.foreach (filename) do |line|
         line = line.chomp.split(" ")
@@ -99,15 +67,15 @@ class Cluster
           next
         else
           node = line.join.to_i(2)
+          # setup the list of unduplicated nodes (hash)
           @nodes[node] = true
-          # @leader_pointers[node_name] = node_name
-          # @groups[node] = [node_name]
-          # node_name += 1
+          # setup leader pointers
+          @leader_pointers[node] = node
+          # setup groups (clusters)
+          @groups[node] = [node]
         end
       end
     end
-    # sort nodes
-    # @nodes.sort! { |a, b| a[0] <=> b[0] }
   end
 
   def union(node1, node2)
@@ -139,28 +107,17 @@ class Cluster
     end
   end
 
-  def clusterize(spacing)
+  def clusterize
+    @nodes.each do |k, v|
+      # get an array of closest nodes for each node in list
+      closest = closest_for(k)
 
-    @edges.each do |edge|
-      if edge[0] == spacing
-        @num_clusters = @groups.length
-        puts "Found spacing: #{edge.inspect}"
-        # puts "Groups:\n#{groups.inspect}"
-        break
+      # unify them in clusters
+      closest.each do |node|
+        if @leader_pointers[k] != @leader_pointers[node]
+          union(k, node)
+        end
       end
-
-      # if there is no cycle
-      if @leader_pointers[edge[1]] != @leader_pointers[edge[2]]
-        puts "\nCoalesce 2 vertices: #{edge[1]} and #{edge[2]} with distance between them: #{edge[0]}"
-        puts "Number of groups: #{@groups.length}"
-
-        # let's unite two points
-        union(edge[1], edge[2])
-
-      else
-        # puts "Found cycle, #{edge[1]} and #{edge[2]} are in the same group: #{@leader_pointers[edge[1]]}"
-      end
-            
     end    
   end
 
@@ -171,8 +128,8 @@ end
 input_file = 'clustering_big.txt'
 # input_file = 'testArray.txt'
 
-solution = Cluster.new(input_file, 3)
+solution = Cluster.new(input_file)
 
-puts "\n-----------------------------------------------------------------------"
-puts "1. Clustering Algorithm. The largest value of k is #{solution.num_clusters}"
-puts "-----------------------------------------------------------------------\n"
+puts "\n----------------------------------------------------------------------"
+puts "2. Clustering Algorithm. We have #{solution.groups.length} clusters with spacing at least 3"
+puts "----------------------------------------------------------------------\n"
