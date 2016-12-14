@@ -20,7 +20,7 @@ end
 
 class Huffman
 
-  attr_reader :min_length, :max_length, :number_of_symbols
+  attr_reader :lengths, :min_length, :max_length, :number_of_symbols
 
   def initialize(filedata)
     
@@ -28,7 +28,7 @@ class Huffman
     @min_heap = []
 
     # hash of lengths per each weight in input data
-    @length = {}
+    @lengths = {}
 
     # tree hash
     @tree = {}
@@ -41,27 +41,27 @@ class Huffman
 
     load_data filedata
     construct_tree
-    calculate_length
+    calculate_lengths
   end
 
-  def calculate_length
+  def calculate_lengths
     @input_weights.each do |node|
       current_node = node
       while true do
         parent = @parents[current_node]
         break if !parent
-        
-        @length[node] = @length[node] ? @length[node] + 1 : 2
+
+        @lengths[node] = @lengths[node] ? @lengths[node] + 1 : 2
         current_node = parent
       end
     end
 
-    # sort length by value in ascending order
-    @length = @length.sort_by {|k, v| v}.to_h
+    # sort lengths by value in ascending order
+    @lengths = @lengths.sort_by {|k, v| v}.to_h
 
     # set min and max values
-    @min_length = @length.values.first
-    @max_length = @length.values.last    
+    @min_length = @lengths.values.first
+    @max_length = @lengths.values.last    
   end
 
   def construct_tree
@@ -200,6 +200,8 @@ input_file = 'huffman.txt'
 # input_file = 'testArray.txt'
 
 solution = Huffman.new(input_file)
+
+puts "\nAll lengths data:\n\n#{solution.lengths}"
 
 puts "\n-----------------------------------------------------------------------"
 puts "Huffman Algorithm.\n\r"
