@@ -36,7 +36,7 @@ class Huffman
     # hash of parents of nodes of the tree
     @parents = {}
 
-    # array of input weights of symbols
+    # array of input weights of symbols (from input file)
     @input_weights = []
 
     load_data filedata
@@ -45,15 +45,14 @@ class Huffman
   end
 
   def calculate_length
-    @input_weights.each do |leaf|
-      prnt = leaf
+    @input_weights.each do |node|
+      current_node = node
       while true do
-        parent = @parents[prnt]
+        parent = @parents[current_node]
         break if !parent
-        @length[leaf] = @length[leaf] ? @length[leaf] + 1 : 2
-        # puts "Leaf: #{leaf}, Parent: #{parent}"
-        # gets
-        prnt = parent
+        
+        @length[node] = @length[node] ? @length[node] + 1 : 2
+        current_node = parent
       end
     end
 
