@@ -1,7 +1,9 @@
 # Huffman Coding Algorithm
 
 # Run the Huffman coding algorithm from lecture on provided data set.
-# Report the maximum length of a codeword in the resulting Huffman code
+
+# 1. Report the maximum length of a codeword in the resulting Huffman code
+# 2. Report the minimum length of a codeword in the resulting Huffman code
 
 ###########################################################################################################################
 
@@ -22,7 +24,7 @@ class Huffman
 
   def initialize(filedata)
     
-    # min-heap is used to select minimum weighted symbols in given alphabet
+    # min-heap is using to select minimum weighted symbols in given alphabet
     @min_heap = []
 
     # hash of lengths per each weight in input data
@@ -72,7 +74,7 @@ class Huffman
       hash = { 0 => elem1, 1 => elem2 }
       @tree[elem1 + elem2] = hash
       return
-      
+
     else
       # choose two elements
       elem1 = extract_min
