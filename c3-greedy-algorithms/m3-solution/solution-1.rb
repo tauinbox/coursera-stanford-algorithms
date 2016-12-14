@@ -23,21 +23,65 @@ class Huffman
   def initialize(filedata)
     # @symbols = {}
     @min_heap = []
+    @length = {}
+    @tree = {}
+    @parents = {}
+    @leaves = []
 
     load_data filedata
+    construct_tree
 
-    # @symbols = @symbols.sort_by {|k, v| v}.to_h
-    puts "\nInitialized heap:\n\n#{@min_heap.inspect}"
 
-    first = extract_min
-    second = extract_min
+    @leaves.each do |leaf|
+      prnt = leaf
+      while true do
+        parent = @parents[prnt]
+        break if !parent
+        @length[leaf] = @length[leaf] ? @length[leaf] + 1 : 2
+        # puts "Leaf: #{leaf}, Parent: #{parent}"
+        # gets
+        prnt = parent
+      end
+    end
 
-    puts "\nGot 2 lowest elements: #{first} and #{second}"    
+    @length = @length.sort_by {|k, v| v}.to_h
+
+    puts "\nLength:\n#{@length}"
 
   end
 
-  def construct_tree()
+  def construct_tree
+    # basecase
+    if @min_heap.length == 2
+      elem1 = extract_min
+      elem2 = extract_min      
+      hash = { 0 => elem1, 1 => elem2 }
+      @tree[elem1 + elem2] = hash
+      return
+    else
+      elem1 = extract_min
+      elem2 = extract_min
 
+      # puts "\nGot 2 lowest elements: #{elem1} and #{elem2}, fuse them and go further!"
+
+      insert(elem1 + elem2)
+      hash = { 0 => elem1, 1 => elem2 }
+
+      construct_tree
+
+      @tree[elem1 + elem2] = hash
+      @parents[elem1] = elem1 + elem2
+      @parents[elem2] = elem1 + elem2
+    end
+  end
+
+  def get_children(node)
+    if @tree[node]
+      children = []
+      children << node[0] if node[0]
+      children << node[1] if node[1]
+    end
+    return children
   end
 
   # Method for loading data from file
@@ -50,7 +94,7 @@ class Huffman
         if line_num == 1
           @number_of_symbols = line 
         else
-          # @symbols[line_num - 1] = line
+          @leaves << line
           insert line
         end
       end
@@ -144,5 +188,5 @@ input_file = 'huffman.txt'
 solution = Huffman.new(input_file)
 
 puts "\n-----------------------------------------------------------------------"
-puts "1. Huffman Algorithm. The maximum length of a codeword is: #{@max_length}"
+puts "1. Huffman Algorithm. The maximum length of a codeword is: #{solution.max_length}"
 puts "-----------------------------------------------------------------------\n"
