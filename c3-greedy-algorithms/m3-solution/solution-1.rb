@@ -18,21 +18,32 @@ end
 
 class Huffman
 
-  attr_reader :max_length, :number_of_symbols
+  attr_reader :min_length, :max_length, :number_of_symbols
 
   def initialize(filedata)
-    # @symbols = {}
+    
+    # min-heap is used to select minimum weighted symbols in given alphabet
     @min_heap = []
+
+    # hash of lengths per each weight in input data
     @length = {}
+
+    # tree hash
     @tree = {}
+
+    # hash of parents of nodes of the tree
     @parents = {}
-    @leaves = []
+
+    # array of input weights of symbols
+    @input_weights = []
 
     load_data filedata
     construct_tree
+    calculate_length
+  end
 
-
-    @leaves.each do |leaf|
+  def calculate_length
+    @input_weights.each do |leaf|
       prnt = leaf
       while true do
         parent = @parents[prnt]
@@ -44,13 +55,16 @@ class Huffman
       end
     end
 
+    # sort length by value in ascending order
     @length = @length.sort_by {|k, v| v}.to_h
 
-    puts "\nLength:\n#{@length}"
-
+    # set min and max values
+    @min_length = @length.values.first
+    @max_length = @length.values.last    
   end
 
   def construct_tree
+
     # basecase
     if @min_heap.length == 2
       elem1 = extract_min
@@ -58,7 +72,9 @@ class Huffman
       hash = { 0 => elem1, 1 => elem2 }
       @tree[elem1 + elem2] = hash
       return
+      
     else
+      # choose two elements
       elem1 = extract_min
       elem2 = extract_min
 
@@ -67,21 +83,14 @@ class Huffman
       insert(elem1 + elem2)
       hash = { 0 => elem1, 1 => elem2 }
 
+      # recursive function call
       construct_tree
 
+      # setup the tree and parents for each node
       @tree[elem1 + elem2] = hash
       @parents[elem1] = elem1 + elem2
       @parents[elem2] = elem1 + elem2
     end
-  end
-
-  def get_children(node)
-    if @tree[node]
-      children = []
-      children << node[0] if node[0]
-      children << node[1] if node[1]
-    end
-    return children
   end
 
   # Method for loading data from file
@@ -94,12 +103,14 @@ class Huffman
         if line_num == 1
           @number_of_symbols = line 
         else
-          @leaves << line
+          @input_weights << line
           insert line
         end
       end
     end
   end
+
+  ############################################### Min Heap Methods #########################################
 
   # min-heap (@min_heap)
   def insert(key)
@@ -149,34 +160,36 @@ class Huffman
     left_child = left_child(@min_heap, index)
     right_child = right_child(@min_heap, index)
 
-    # puts "[- MIN] restoring from node (#{index}) #{@min_heap[index]}"
+    # puts "restoring from node (#{index}) #{@min_heap[index]}"
 
     if left_child && right_child
-      # puts "[- MIN] left_child (#{left_child[1]}) #{left_child[0]}, right_child (#{right_child[1]}) #{right_child[0]}"
+      # puts "left_child (#{left_child[1]}) #{left_child[0]}, right_child (#{right_child[1]}) #{right_child[0]}"
       if left_child[0] < right_child[0]
-        # puts "[- MIN] chosen left_child (#{left_child[1]}) #{left_child[0]} instead of right_child (#{right_child[1]}) #{right_child[0]}"
+        # puts "chosen left_child (#{left_child[1]}) #{left_child[0]} instead of right_child (#{right_child[1]}) #{right_child[0]}"
         child_to_compare = left_child
       else
-        # puts "[- MIN] chosen right_child (#{right_child[1]}) #{right_child[0]} instead of left_child (#{left_child[1]}) #{left_child[0]}"
+        # puts "chosen right_child (#{right_child[1]}) #{right_child[0]} instead of left_child (#{left_child[1]}) #{left_child[0]}"
         child_to_compare = right_child
       end
     elsif left_child && !right_child
-      # puts "[- MIN] chosen left_child (#{left_child[1]}) #{left_child[0]}"
+      # puts "chosen left_child (#{left_child[1]}) #{left_child[0]}"
       child_to_compare = left_child
     elsif !left_child && right_child
-      # puts "[- MIN] chosen right_child (#{right_child[1]}) #{right_child[0]}"
+      # puts "chosen right_child (#{right_child[1]}) #{right_child[0]}"
       child_to_compare = right_child
     else
-      # puts "[- MIN] no children found, return!"
+      # puts "no children found, return!"
       return
     end
 
     if child_to_compare[0] < @min_heap[index]
-      # puts "[- MIN] swap (#{child_to_compare[1]}) #{child_to_compare[0]} with parent (#{index}) #{@min_heap[index]}"
+      # puts "swap (#{child_to_compare[1]}) #{child_to_compare[0]} with parent (#{index}) #{@min_heap[index]}"
       @min_heap.swap!(index, child_to_compare[1])
       restore_after_extraction_min(child_to_compare[1])
     end
   end
+
+  ############################################### Min Heap Methods #########################################
 
 end
 
@@ -188,5 +201,7 @@ input_file = 'huffman.txt'
 solution = Huffman.new(input_file)
 
 puts "\n-----------------------------------------------------------------------"
-puts "1. Huffman Algorithm. The maximum length of a codeword is: #{solution.max_length}"
+puts "Huffman Algorithm.\n\r"
+puts "1. The maximum length of a codeword is: #{solution.max_length}"
+puts "2. The minimum length of a codeword is: #{solution.min_length}"
 puts "-----------------------------------------------------------------------\n"
