@@ -11,11 +11,34 @@ class Mwis
 
   def initialize(filedata)
     @weights = []
+    @a = []
+    @s = []
 
     load_data filedata
 
-    puts "Input data: #{@weights.inspect}"
+    # puts "\nInput data:\n\n#{@weights.inspect}"
 
+    calculate_max_sum
+    puts "\nA:\n\n#{@a.inspect}"
+
+  end
+
+  def calculate_max_sum
+    @a[0] = 0
+    @a[1] = @weights[0]
+
+    # puts "\nA: #{@a.inspect}\n----------------------"
+    for i in(2..@weights.length - 1)
+      # puts "Found max: #{[@a[i - 1], @a[i - 2] + @weights[i - 1]].max} from A[#{i - 1}] (#{@a[i - 1]}) and A[#{i - 2}] + W[#{i - 1}] = #{@a[i - 2]} + #{@weights[i - 1]} (#{@a[i - 2] + @weights[i - 1]})"
+      @a[i] = [@a[i - 1], @a[i - 2] + @weights[i - 1]].max
+      # puts "A[#{i}] = #{@a[i]}"
+      # puts "\nA: #{@a.inspect}\n----------------------"
+      # gets
+    end
+  end
+
+  def reconstruct_wis
+    
   end
 
   # Method for loading data from file
