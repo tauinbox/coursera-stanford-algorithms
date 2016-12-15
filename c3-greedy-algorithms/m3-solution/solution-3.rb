@@ -12,7 +12,7 @@ class Mwis
   def initialize(filedata)
     @weights = []
     @a = []
-    @s = []
+    @s = {}
 
     load_data filedata
 
@@ -20,6 +20,9 @@ class Mwis
 
     calculate_max_sum
     puts "\nA:\n\n#{@a.inspect}"
+
+    reconstruct_wis
+    puts "\nS:\n\n#{@s.inspect}"
 
   end
 
@@ -38,7 +41,21 @@ class Mwis
   end
 
   def reconstruct_wis
-    
+    i = @a.length
+    while i >= 1 do
+      if @a[i - 1] >= (@a[i - 2] + @weights[i - 1])
+        # case 1 wins, last vertex is not in max-WIS (@s)
+        i -= 1
+      else
+        # case 2 wins, last vertex is in max-WIS (@s)
+        @s[i] = @weights[i - 1]
+        # puts "[CASE 2] A[#{i - 1}] #{@a[i - 1]} < A[#{(i < 2 ? 2 : i) - 2}] + W[#{i - 1}] = #{@a[i - 2] + @weights[i - 1]}, put W[#{i - 1}] #{@weights[i - 1]} into S"
+        i = i -= 2
+        i = 0 if i < 0
+      end
+      # puts "i: #{i}, W[#{i}]: #{@weights[i]}, S: #{@s.inspect}"
+      # gets
+    end
   end
 
   # Method for loading data from file
