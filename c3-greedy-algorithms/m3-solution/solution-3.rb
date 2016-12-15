@@ -10,21 +10,24 @@ class Mwis
   attr_reader :number_of_vertices, :max_wis, :s, :answer_string
 
   def initialize(filedata)
+    # input array of weights
     @weights = []
+
+    # array of calculated max sums
     @a = []
+
+    # array of maximum-weight independent set
     @s = {}
+
+    # it's obvious :)
     @answer_string = ""
 
+    # load data from input file
     load_data filedata
 
-    # puts "\nInput data:\n\n#{@weights.inspect}"
-
+    # processing
     calculate_max_sum
-    @max_wis = @a.last
-    # puts "\nA:\n\n#{@a.inspect}"
-
     reconstruct_wis
-
     get_answer
 
   end
@@ -51,6 +54,7 @@ class Mwis
       # puts "\nA: #{@a.inspect}\n----------------------"
       # gets
     end
+    @max_wis = @a.last
   end
 
   def reconstruct_wis
@@ -86,7 +90,6 @@ class Mwis
       end
     end
   end
-
 
 end
 
