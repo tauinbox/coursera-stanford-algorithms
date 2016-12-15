@@ -7,23 +7,36 @@
 
 class Mwis
 
-  attr_reader :number_of_vertices, :max_wis, :answer_string
+  attr_reader :number_of_vertices, :max_wis, :s, :answer_string
 
   def initialize(filedata)
     @weights = []
     @a = []
     @s = {}
+    @answer_string = ""
 
     load_data filedata
 
     # puts "\nInput data:\n\n#{@weights.inspect}"
 
     calculate_max_sum
-    puts "\nA:\n\n#{@a.inspect}"
+    @max_wis = @a.last
+    # puts "\nA:\n\n#{@a.inspect}"
 
     reconstruct_wis
-    puts "\nS:\n\n#{@s.inspect}"
 
+    get_answer
+
+  end
+
+  def get_answer
+    [1, 2, 3, 4, 17, 117, 517, 997].each do |index|
+      if @s.key?(index)
+        @answer_string += '1'
+      else
+        @answer_string += '0'
+      end
+    end
   end
 
   def calculate_max_sum
@@ -84,8 +97,10 @@ input_file = 'mwis.txt'
 
 solution = Mwis.new(input_file)
 
+puts "\nThese ones belong to the maximum-weight independent set:\n\n#{solution.s}"
+
 puts "\n-----------------------------------------------------------------------"
 puts "Dynamic Programming Algorithm.\n\r"
-puts "These ones belong to the maximum-weight independent set: #{solution.max_wis}"
+puts "Maximum-weight independent set SUM: #{solution.max_wis}"
 puts "Answer string: #{solution.answer_string}"
 puts "-----------------------------------------------------------------------\n"
