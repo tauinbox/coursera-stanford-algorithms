@@ -17,17 +17,17 @@ class Knapsack
     puts "\nKnapsack sise: #{@knapsack_size}, Total number of items: #{@number_of_items}"
     puts "\nItems:\n\n#{@items.inspect}"
 
-    # processing
-    puts "A:\n#{@a.inspect}"
+    processing
+    # puts "A:\n#{@a.inspect}"
 
-    puts "A[0, 6] = #{get_val(0, 6)[0]}"
+    # puts "A[0, 6] = #{get_val(0, 6)[0]}"
 
   end
 
-  def put_val(i, x, val)
-    check = get_val(i, x - 1)
-    if check[0] == val
-      @a[check[1]] = [@a[check[1]][0], @a[check[1]][1], @a[check[1]][2] += 1]
+  def put_val(i, val)
+    if val == @a[i].last[0]
+      # if val is equal to the last value then just increment its length
+      @a[i].last[2] += 1
     else
       set_val(i, val, 1)
     end
@@ -46,14 +46,14 @@ class Knapsack
   end
 
   def get_val(i, x)
-    @a[i].each_with_index do |dataset, idx|
-      if x >= dataset[1] && x < dataset[1] + dataset[2]
-        # format [found_value, index in @a]
-        return [dataset[0], idx]
-      else
-        return false
+    @a[i].each do |dataset|
+      if x >= dataset[1] && x < (dataset[1] + dataset[2])
+        # puts "[GET VALUE] Found A[#{i}, #{x}] = #{dataset[0]}  (from #{dataset[1]} to #{dataset[1] + dataset[2]})"
+        return dataset[0]
       end
     end
+    puts "[searching] NOTHING FOUND"
+    return false
   end
 
   def processing
@@ -61,36 +61,34 @@ class Knapsack
     set_val(0, 0, @knapsack_size + 1)
 
     for i in(1..@number_of_items)
-      # puts "Ckeck #{i}-st item: value = #{@items[i - 1][0]}, weight = #{@items[i - 1][1]}"
+      # populate recurring previous values in order to current item weight
+      set_val(i, get_val(i - 1, @items[i - 1][1] - 1), @items[i - 1][1])
+      puts "\n*****************************************************************\nPopulate a[#{i}] with value #{get_val(i - 1, @items[i - 1][1] - 1)} (#{@items[i - 1][1]} times)\n\n"
 
+      # loop while the end of capacity
+      while @a[i].last[1] + @a[i].last[2] <= @knapsack_size
+        current_index = @a[i].last[1] + @a[i].last[2]
 
+        # choose Max between A[i - 1, x] and A[i - 1, x - wi] + vi
+        one_way = get_val(i - 1, current_index)
+        another_way = get_val(i - 1, current_index -  @items[i - 1][1]) + @items[i - 1][0]
 
-      for x in(0..@knapsack_size)
-        # puts "consider X = #{x}"
-        @a[i] = Array.new if !@a[i]
-        if @items[i - 1][1] > x
+        puts "One way: A[#{i - 1}, #{current_index}] #{one_way}, Another: #{another_way}, current_index = #{current_index}"
 
-          puts "[not enough space] have #{x}, trying to put item #{i - 1} with weight #{@items[i - 1][1]}, leave previous: #{@a[i - 1][x]}"
-          @a[i][x] = @a[i - 1][x]
+        chosen_max = [one_way, another_way].max
 
-        else
+        puts "Chosen value: #{chosen_max}, put it to A!"
+        put_val(i, chosen_max)
 
-          # choose Max between A[i - 1, x] and A[i - 1, x - wi] + vi
-          chosen_max = [@a[i - 1][x], @a[i - 1][x - @items[i - 1][1]] + @items[i - 1][0]].max
-          @a[i][x] = chosen_max
-          # puts "Chosen value: #{chosen_max}"          
+        puts "\nnow A:\n#{@a.inspect}"
 
-        end
-        # puts "-------"
-        # gets
+        puts "-------"
+        gets
       end
-
-
-
 
     end
     # output result value
-    @max_value = @a.last.last
+    @max_value = @a.last.last[0]
   end
 
   # Method for loading data from file
