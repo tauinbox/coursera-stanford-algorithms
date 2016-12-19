@@ -14,15 +14,18 @@ class Knapsack
 
     load_data filedata
 
-    puts "\nKnapsack sise: #{@knapsack_size}, Total number of items: #{@number_of_items}"
-    puts "\nItems:\n\n#{@items.inspect}"
+    # puts "\nKnapsack sise: #{@knapsack_size}, Total number of items: #{@number_of_items}"
+    # puts "\nItems:\n\n#{@items.inspect}"
 
+    processing
+    # puts "A:\n#{@a.inspect}"
+
+  end
+
+  def processing
     # initialize first column A[0][x] = 0 for x = 0, 1, ..., W (knapsack_size)
     @a[0] = Array.new if !@a[0]
     0.upto(@knapsack_size) { |x| @a[0][x] = 0 }
-
-    # puts "A:\n#{@a.inspect}"
-    # puts "A length:\n#{@a[0].length}"
 
     for i in(1..@number_of_items)
       # puts "Ckeck #{i}-st item: value = #{@items[i - 1][0]}, weight = #{@items[i - 1][1]}"
@@ -33,6 +36,7 @@ class Knapsack
           # puts "[not enough space] have #{x}, trying to put item #{i - 1} with weight #{@items[i - 1][1]}, leave previous: #{@a[i - 1][x]}"
           @a[i][x] = @a[i - 1][x]
         else
+          # choose Max between A[i - 1, x] and A[i - 1, x - wi] + vi
           chosen_max = [@a[i - 1][x], @a[i - 1][x - @items[i - 1][1]] + @items[i - 1][0]].max
           @a[i][x] = chosen_max
           # puts "Chosen value: #{chosen_max}"          
@@ -41,10 +45,8 @@ class Knapsack
         # gets
       end
     end
-
-    puts "Answer: #{@a.last.last}"
-    # puts "A:\n#{@a.inspect}"
-
+    # output result value
+    @max_value = @a.last.last
   end
 
   # Method for loading data from file
@@ -73,6 +75,7 @@ input_file = 'knapsack1.txt'
 
 solution = Knapsack.new(input_file)
 
-puts "\n-----------------------------------------------------------------------"
+puts "\n-------------------------------------------------"
+puts "Sum of the most valuable items put into knapsack\n\n"
 puts "1. The value of the optimal solution is: #{solution.max_value}"
-puts "-----------------------------------------------------------------------\n"
+puts "-------------------------------------------------\n"
