@@ -14,11 +14,11 @@ class Knapsack
 
     load_data filedata
 
-    puts "\nKnapsack sise: #{@knapsack_size}, Total number of items: #{@number_of_items}"
-    puts "\nItems:\n\n#{@items.inspect}"
+    # puts "\nKnapsack sise: #{@knapsack_size}, Total number of items: #{@number_of_items}"
+    # puts "\nItems:\n\n#{@items.inspect}"
 
     processing
-    # puts "A:\n#{@a.inspect}"
+    puts "A:\n#{@a.inspect}"
 
     # puts "A[0, 6] = #{get_val(0, 6)[0]}"
 
@@ -46,14 +46,14 @@ class Knapsack
   end
 
   def get_val(i, x)
-    puts "\n[searching] search for i: #{i}, x: #{x}"
+    # puts "\n[searching] search for i: #{i}, x: #{x}"
     @a[i].each do |dataset|
       if x >= dataset[1] && x < (dataset[1] + dataset[2])
         # puts "[GET VALUE] Found A[#{i}, #{x}] = #{dataset[0]}  (from #{dataset[1]} to #{dataset[1] + dataset[2]})"
         return dataset[0]
       end
     end
-    puts "[searching] NOTHING FOUND"
+    puts "[searching] ERROR. NOTHING FOUND"
     return false
   end
 
@@ -63,21 +63,32 @@ class Knapsack
 
     for i in(1..@number_of_items)
       # populate recurring previous values in order to current item weight
-      prev_itt = @a[i - 1][0]
       current_item_size = @items[i - 1][1]
-      puts "previous itterative: #{prev_itt}, current item size: #{current_item_size}"
-      if current_item_size <= prev_itt[2]
-        value_to_repeat = prev_itt[0]
-        repeat_number = current_item_size
-        set_val(i, value_to_repeat, repeat_number)
-      else
-        value_to_repeat = prev_itt[0]
-        repeat_number = prev_itt[2]
-        set_val(i, value_to_repeat, repeat_number)        
+      already_filled = 0
+
+      @a[i - 1].each do |item|
+
+        puts "\n*****************************************************************\nLooking at previous A[#{i - 1}]: #{item}, current item size: #{current_item_size}"
+
+        value_to_repeat = item[0]
+        occupied_indices = item[1] + item[2]
+
+        if occupied_indices >= current_item_size
+          repeat_number = current_item_size - already_filled
+          set_val(i, value_to_repeat, repeat_number)
+          puts "Populate a[#{i}] with value #{value_to_repeat} (#{repeat_number} times)\n\n"
+          puts "\nnow A:\n#{@a.inspect}"
+          break
+        else
+          already_filled = item[2]
+          repeat_number = already_filled
+          set_val(i, value_to_repeat, repeat_number)
+          puts "Populate a[#{i}] with value #{value_to_repeat} (#{repeat_number} times)\n\n"
+          puts "\nnow A:\n#{@a.inspect}"          
+        end
+
       end
 
-      puts "\n*****************************************************************\nPopulate a[#{i}] with value #{value_to_repeat} (#{repeat_number} times)\n\n"
-      puts "\nnow A:\n#{@a.inspect}"
 
       # loop while the end of capacity
       while @a[i].last[1] + @a[i].last[2] <= @knapsack_size
@@ -88,17 +99,16 @@ class Knapsack
         one_way_flag = true if @items[i - 1][1] > current_index
         another_way = get_val(i - 1, current_index -  @items[i - 1][1]) + @items[i - 1][0] if !one_way_flag
 
-        puts "One way: A[#{i - 1}, #{current_index}] #{one_way}, Another: #{another_way}, current_index = #{current_index}"
+        # puts "One way: A[#{i - 1}, #{current_index}] #{one_way}, Another: #{another_way}, current_index = #{current_index}"
 
         chosen_max = one_way_flag ? one_way : [one_way, another_way].max
 
         one_way_flag = false
 
-        puts "Chosen value: #{chosen_max}, put it to A!"
+        # puts "Chosen value: #{chosen_max}, put it to A!"
         put_val(i, chosen_max)
 
         puts "\nnow A:\n#{@a.inspect}"
-
         puts "-------"
         gets
       end
@@ -136,5 +146,5 @@ solution = Knapsack.new(input_file)
 
 puts "\n-------------------------------------------------"
 puts "Sum of the most valuable items put into knapsack\n\n"
-puts "1. The value of the optimal solution is: #{solution.max_value}"
+puts "2. The value of the optimal solution is: #{solution.max_value}"
 puts "-------------------------------------------------\n"
