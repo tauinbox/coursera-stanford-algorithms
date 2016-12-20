@@ -46,6 +46,7 @@ class Knapsack
   end
 
   def get_val(i, x)
+    puts "\n[searching] search for i: #{i}, x: #{x}"
     @a[i].each do |dataset|
       if x >= dataset[1] && x < (dataset[1] + dataset[2])
         # puts "[GET VALUE] Found A[#{i}, #{x}] = #{dataset[0]}  (from #{dataset[1]} to #{dataset[1] + dataset[2]})"
@@ -62,8 +63,21 @@ class Knapsack
 
     for i in(1..@number_of_items)
       # populate recurring previous values in order to current item weight
-      set_val(i, get_val(i - 1, @items[i - 1][1] - 1), @items[i - 1][1])
-      puts "\n*****************************************************************\nPopulate a[#{i}] with value #{get_val(i - 1, @items[i - 1][1] - 1)} (#{@items[i - 1][1]} times)\n\n"
+      prev_itt = @a[i - 1][0]
+      current_item_size = @items[i - 1][1]
+      puts "previous itterative: #{prev_itt}, current item size: #{current_item_size}"
+      if current_item_size <= prev_itt[2]
+        value_to_repeat = prev_itt[0]
+        repeat_number = current_item_size
+        set_val(i, value_to_repeat, repeat_number)
+      else
+        value_to_repeat = prev_itt[0]
+        repeat_number = prev_itt[2]
+        set_val(i, value_to_repeat, repeat_number)        
+      end
+
+      puts "\n*****************************************************************\nPopulate a[#{i}] with value #{value_to_repeat} (#{repeat_number} times)\n\n"
+      puts "\nnow A:\n#{@a.inspect}"
 
       # loop while the end of capacity
       while @a[i].last[1] + @a[i].last[2] <= @knapsack_size
@@ -71,11 +85,14 @@ class Knapsack
 
         # choose Max between A[i - 1, x] and A[i - 1, x - wi] + vi
         one_way = get_val(i - 1, current_index)
-        another_way = get_val(i - 1, current_index -  @items[i - 1][1]) + @items[i - 1][0]
+        one_way_flag = true if @items[i - 1][1] > current_index
+        another_way = get_val(i - 1, current_index -  @items[i - 1][1]) + @items[i - 1][0] if !one_way_flag
 
         puts "One way: A[#{i - 1}, #{current_index}] #{one_way}, Another: #{another_way}, current_index = #{current_index}"
 
-        chosen_max = [one_way, another_way].max
+        chosen_max = one_way_flag ? one_way : [one_way, another_way].max
+
+        one_way_flag = false
 
         puts "Chosen value: #{chosen_max}, put it to A!"
         put_val(i, chosen_max)
