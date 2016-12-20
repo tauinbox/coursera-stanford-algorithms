@@ -57,6 +57,18 @@ class Knapsack
     return false
   end
 
+  def get_iterations(i, x)
+    # puts "\n[searching] search for i: #{i}, x: #{x}"
+    @a[i].each do |dataset|
+      if x >= dataset[1] && x < (dataset[1] + dataset[2])
+        # puts "[GET VALUE] Found A[#{i}, #{x}] = #{dataset[0]}  (from #{dataset[1]} to #{dataset[1] + dataset[2]})"
+        return dataset[1] + dataset[2] - x
+      end
+    end
+    puts "[searching] ERROR. NOTHING FOUND"
+    return false    
+  end
+
   def processing
     # initialize first column A[0][x] = 0 for x = 0, 1, ..., W (knapsack_size)
     set_val(0, 0, @knapsack_size + 1)
@@ -99,14 +111,28 @@ class Knapsack
         one_way_flag = true if @items[i - 1][1] > current_index
         another_way = get_val(i - 1, current_index -  @items[i - 1][1]) + @items[i - 1][0] if !one_way_flag
 
-        # puts "One way: A[#{i - 1}, #{current_index}] #{one_way}, Another: #{another_way}, current_index = #{current_index}"
+        puts "\ncurrent_index = #{current_index}\n\n[ONE WAY]: #{one_way}\n[ANOTHER WAY]: #{another_way}" if !one_way_flag
+        puts "\n[ONLY WAY]: A[#{i - 1}, #{current_index}] #{one_way}" if one_way_flag
 
         chosen_max = one_way_flag ? one_way : [one_way, another_way].max
 
+        # reset flag
         one_way_flag = false
 
-        # puts "Chosen value: #{chosen_max}, put it to A!"
-        put_val(i, chosen_max)
+        iterations1 = get_iterations(i - 1, current_index)
+        iterations2 = get_iterations(i - 1, current_index - @items[i - 1][1])
+        min_iterations = [iterations1, iterations2].min
+
+        puts "\nChosen value: #{chosen_max}, put it to A!"
+        puts "Number of previous iterations A[i - 1, x]: #{iterations1}"
+        puts "Number of previous iterations A[i - 1, x - wi]: #{iterations2}"
+        puts "Total repetitions: #{min_iterations}"
+
+        if min_iterations > 1
+          set_val(i,chosen_max, min_iterations)
+        else
+          put_val(i, chosen_max)
+        end
 
         puts "\nnow A:\n#{@a.inspect}"
         puts "-------"
