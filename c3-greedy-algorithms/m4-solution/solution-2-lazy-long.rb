@@ -23,6 +23,7 @@ class Knapsack
   end
 
   def processing
+    # trace only two steps
     previous = 0
     current = 1
 
@@ -50,11 +51,8 @@ class Knapsack
         # puts "-------"
         # gets
       end
-      # puts @a.inspect
-      # gets
+      # set previous to current
       @a[previous] = @a[current]
-      # puts @a.inspect
-      # gets
     end
     # output result value
     @max_value = @a[current].last
@@ -89,5 +87,5 @@ solution = Knapsack.new(input_file)
 
 puts "\n-------------------------------------------------"
 puts "Sum of the most valuable items put into knapsack\n\n"
-puts "1. The value of the optimal solution is: #{solution.max_value.inspect}"
+puts "2. The value of the optimal solution is: #{solution.max_value.inspect}"
 puts "-------------------------------------------------\n"
