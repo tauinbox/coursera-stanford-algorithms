@@ -80,20 +80,20 @@ class Knapsack
 
         # puts "\n*****************************************************************\nLooking at previous A[#{i - 1}]: #{item}, current item size: #{current_item_size}"
 
-        value_to_repeat = item[0]
-        occupied_indices = item[1] + item[2]
+        previous_item_value = item[0]
+        previous_repetition_size = item[2]
 
-        if occupied_indices >= current_item_size
+        if previous_repetition_size >= (current_item_size - already_filled)
           repeat_number = current_item_size - already_filled
-          set_val(i, value_to_repeat, repeat_number)
-          # puts "Populate a[#{i}] with value #{value_to_repeat} (#{repeat_number} times)\n\n"
+          set_val(i, previous_item_value, repeat_number)
+          # puts "Populate a[#{i}] with value #{previous_item_value} (#{repeat_number} times)\n\n"
           # puts "\nnow A:\n#{@a.inspect}"
           break
         else
-          already_filled = item[2]
-          repeat_number = already_filled
-          set_val(i, value_to_repeat, repeat_number)
-          # puts "Populate a[#{i}] with value #{value_to_repeat} (#{repeat_number} times)\n\n"
+          already_filled += item[2]
+          repeat_number = item[2]
+          set_val(i, previous_item_value, repeat_number)
+          # puts "Populate a[#{i}] with value #{previous_item_value} (#{repeat_number} times)\n\n"
           # puts "\nnow A:\n#{@a.inspect}"          
         end
 
@@ -132,9 +132,10 @@ class Knapsack
         # puts "-------"
         # gets
       end
-      puts "*************************************************************************************"
-      puts "Item value: #{@items[i - 1][0]}, weight: #{@items[i - 1][1]}"
-      puts "\nA[#{i}], length #{@a[i].length}:\n#{@a[i].inspect}"
+      # puts "*************************************************************************************"
+      # puts "Item value: #{@items[i - 1][0]}, weight: #{@items[i - 1][1]}"
+      # puts "\nA[#{i}], length #{@a[i].length}:\n#{@a[i].inspect}"
+      # print (@a[i].last[0].to_s + ' ')
     end
     # output result value
     @max_value = @a.last.last[0]
