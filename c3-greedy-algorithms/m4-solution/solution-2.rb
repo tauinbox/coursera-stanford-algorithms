@@ -24,25 +24,25 @@ class Knapsack
 
   end
 
-  def put_val(i, val)
-    if val == @a[i].last[0]
-      # if val is equal to the last value then just increment its length
-      @a[i].last[2] += 1
-    else
-      set_val(i, val, 1)
-    end
-  end
-
   # set recurring value
   def set_val(i, val, num_of_iterations)
+    increment = false
     @a[i] = Array.new if !@a[i]
     if @a[i].length == 0
       start_index = 0
     else
-      last = @a[i].last
-      start_index = last[1] + last[2]
+      last_item = @a[i].last
+      start_index = last_item[1] + last_item[2]
+      increment = true if val == last_item[0]
     end
-    @a[i] << [val, start_index, num_of_iterations]
+
+    if increment
+      @a[i].last[2] += num_of_iterations
+      puts "record already exists, just increment it, #{@a[i].length}, #{@a[i].last[0]}"
+    else
+      puts "add new record"
+      @a[i] << [val, start_index, num_of_iterations]
+    end
   end
 
   def get_val(i, x)
@@ -128,13 +128,10 @@ class Knapsack
         puts "Number of previous iterations A[i - 1, x - wi]: #{iterations2}"
         puts "Total repetitions: #{min_iterations}"
 
-        if min_iterations > 1
-          set_val(i,chosen_max, min_iterations)
-        else
-          put_val(i, chosen_max)
-        end
+        set_val(i, chosen_max, min_iterations)
 
         puts "\nnow A:\n#{@a.inspect}"
+        puts "i: #{i}, capacity: #{@a[i].last[1] + @a[i].last[2]}"
         puts "-------"
         gets
       end
