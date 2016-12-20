@@ -2,6 +2,8 @@
 
 # Calculate the value of the optimal solution
 
+# Straight forward implementation (unfeasible for large data)
+
 ###########################################################################################################################
 
 class Knapsack

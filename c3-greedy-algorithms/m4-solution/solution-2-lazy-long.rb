@@ -2,6 +2,8 @@
 
 # Calculate the value of the optimal solution
 
+# Lazy long implementation where A array has only 2 columns (previous and current)
+
 ###########################################################################################################################
 
 class Knapsack

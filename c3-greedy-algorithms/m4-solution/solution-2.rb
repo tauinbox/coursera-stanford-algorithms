@@ -2,6 +2,8 @@
 
 # Calculate the value of the optimal solution
 
+# More correct and fast implementation using compressed data structure (all repeating values stores in array as [value, start_index, number_of_repeats])
+
 ###########################################################################################################################
 
 class Knapsack
@@ -162,8 +164,8 @@ end
 
 ###########################################################################################################################
 
-# input_file = 'knapsack_big.txt'
-input_file = 'knapsack1.txt'
+input_file = 'knapsack_big.txt'
+# input_file = 'knapsack1.txt'
 # input_file = 'testArray.txt'
 
 solution = Knapsack.new(input_file)
