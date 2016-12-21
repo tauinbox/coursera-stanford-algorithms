@@ -29,16 +29,22 @@ class Knapsack
     @a[0] = Array.new if !@a[0]
     0.upto(@knapsack_size) { |x| @a[0][x] = 0 }
 
+    # loop through items
     for i in(1..@number_of_items)
       # puts "Ckeck #{i}-st item: value = #{@items[i - 1][0]}, weight = #{@items[i - 1][1]}"
+
+      # loop through min to max available space in the knapsack
       for x in(0..@knapsack_size)
         # puts "consider X = #{x}"
+
         @a[i] = Array.new if !@a[i]
+
+        # take @a[i - 1][x] if item size is bigger than what we have
         if @items[i - 1][1] > x
           # puts "[not enough space] have #{x}, trying to put item #{i - 1} with weight #{@items[i - 1][1]}, leave previous: #{@a[i - 1][x]}"
           @a[i][x] = @a[i - 1][x]
         else
-          # choose Max between A[i - 1, x] and A[i - 1, x - wi] + vi
+          # otherwise choose Max between A[i - 1, x] and A[i - 1, x - wi] + vi
           chosen_max = [@a[i - 1][x], @a[i - 1][x - @items[i - 1][1]] + @items[i - 1][0]].max
           @a[i][x] = chosen_max
           # puts "Chosen value: #{chosen_max}"          

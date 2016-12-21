@@ -24,9 +24,12 @@ class Knapsack
 
   end
 
-  # set recurring value
+  # set value into compressed array
   def set_val(i, val, num_of_iterations)
+
+    # used if value we're trying to put into is already exist and we just need to increment its number counter
     increment = false
+
     @a[i] = Array.new if !@a[i]
     if @a[i].length == 0
       start_index = 0
@@ -40,11 +43,12 @@ class Knapsack
       @a[i].last[2] += num_of_iterations
       # puts "record already exists, just increment it, #{@a[i].length}, #{@a[i].last[0]}"
     else
-      # puts "add new record"
+      # puts "add a new record"
       @a[i] << [val, start_index, num_of_iterations]
     end
   end
 
+  # get value from our compressed data structure by indices
   def get_val(i, x)
     # puts "\n[searching] search for i: #{i}, x: #{x}"
     @a[i].each do |dataset|
@@ -57,6 +61,7 @@ class Knapsack
     return false
   end
 
+  # get number of remained interations of value from its position i, x
   def get_iterations(i, x)
     # puts "\n[searching] search for i: #{i}, x: #{x}"
     @a[i].each do |dataset|
@@ -73,14 +78,17 @@ class Knapsack
     # initialize first column A[0][x] = 0 for x = 0, 1, ..., W (knapsack_size)
     set_val(0, 0, @knapsack_size + 1)
 
+    # loop through all items
     for i in(1..@number_of_items)
-      # populate recurring previous values in order to current item weight
+      
       current_item_size = @items[i - 1][1]
       already_filled = 0
 
       @a[i - 1].each do |item|
 
         # puts "\n*****************************************************************\nLooking at previous A[#{i - 1}]: #{item}, current item size: #{current_item_size}"
+
+        # populate recurring previous values in order to current item size
 
         previous_item_value = item[0]
         previous_repetition_size = item[2]
@@ -118,6 +126,7 @@ class Knapsack
         # reset flag
         one_way_flag = false
 
+        # choose which of two iterations is smaller
         iterations1 = get_iterations(i - 1, current_index)
         iterations2 = get_iterations(i - 1, current_index - @items[i - 1][1])
         min_iterations = [iterations1, iterations2].min
@@ -127,6 +136,7 @@ class Knapsack
         # puts "Number of previous iterations A[i - 1, x - wi]: #{iterations2}"
         # puts "Total repetitions: #{min_iterations}"
 
+        # set repetitive value
         set_val(i, chosen_max, min_iterations)
 
         # puts "\nA[#{i}]:\n#{@a[i].inspect}"
