@@ -85,5 +85,5 @@ solution = Knapsack.new(input_file)
 
 puts "\n-------------------------------------------------"
 puts "Sum of the most valuable items put into knapsack\n\n"
-puts "1. The value of the optimal solution is: #{solution.max_value}"
+puts "1. The value of optimal solution is: #{solution.max_value}"
 puts "-------------------------------------------------\n"
