@@ -42,17 +42,24 @@ class Huffman
     load_data filedata
     construct_tree
     calculate_lengths
+    # puts "\nInput data:\n#{@input_weights}"
+    # puts "\nParents:\n#{@parents}"
+    # puts "\nTree:\n#{@tree}"
   end
 
   def calculate_lengths
+
+    # loop through all input data (weights)
     @input_weights.each do |node|
       current_node = node
       while true do
         parent = @parents[current_node]
+        # puts "[NO PARENT] We got root: #{current_node}" if !parent
         break if !parent
 
-        @lengths[node] = @lengths[node] ? @lengths[node] + 1 : 2
-        current_node = parent
+        @lengths[node] = @lengths[node] ? @lengths[node] + 1 : 1
+        # puts "Looking at node #{current_node} - parent: #{parent}"
+        current_node = parent        
       end
     end
 
@@ -72,6 +79,8 @@ class Huffman
       elem2 = extract_min      
       hash = { 0 => elem1, 1 => elem2 }
       @tree[elem1 + elem2] = hash
+      @parents[elem1] = elem1 + elem2
+      @parents[elem2] = elem1 + elem2      
       return
 
     else
