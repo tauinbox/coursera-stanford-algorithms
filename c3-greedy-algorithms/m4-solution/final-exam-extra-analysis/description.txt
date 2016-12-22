@@ -1,0 +1,17 @@
+We are given as input a set of n jobs, where job j has a processing time pj and a deadline dj. 
+
+Recall the definition of completion times Cj from the video lectures. Given a schedule (i.e., an ordering of the jobs), we define the 
+
+lateness lj of job j as the amount of time Cj−dj after its deadline that the job completes, or as 0 if Cj≤dj.
+
+Our goal is to minimize the total lateness ∑jlj.
+
+Which of the following greedy rules produces an ordering that minimizes the total lateness?
+(you can assume that all processing times and deadlines are distinct)
+
+WARNING: This is similar to but not identical to a problem from Problem Set #1 (the objective function is different).
+
+- Schedule the requests in increasing order of the product dj⋅pj
+- Schedule the requests in increasing order of processing time pj
+- Schedule the requests in increasing order of deadline dj
+- None of the other options are correct
