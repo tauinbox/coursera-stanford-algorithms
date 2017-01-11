@@ -20,10 +20,11 @@ class APSP
     @graph = {}
     @a = {}
     load_data filedata
-    puts @graph.inspect
+    # puts @graph.inspect
     # puts @graph.length
 
-    find_from_source(1)
+    path = find_from_source(1)
+    puts "\nList of shortest paths from chosen vertex: #{path.inspect}"
 
   end
 
@@ -52,19 +53,19 @@ class APSP
     @a[0][s] = 0
 
     for i in 1..@num_vertices - 1
-      puts "\ni = #{i}"
+      # puts "\ni = #{i}"
       @graph.each do |vertex|
-        puts "\n----------------------------------------------\nLOOKING AT VERTEX #{vertex}"
+        # puts "\n----------------------------------------------\nLOOKING AT VERTEX #{vertex}"
         case1 = @a[i - 1][vertex.first]
         case2 = get_minimum_inbound_path(i, vertex.first)
-        puts "case1: #{case1}, case2: #{case2}"
+        # puts "case1: #{case1}, case2: #{case2}"
         @a[i] = Hash.new if !@a[i]
         @a[i][vertex.first] = case2 ? (case1 ? [case1, case2].min : case2) : case1
-        puts "set A[#{i}][#{vertex.first}] to #{@a[i][vertex.first]}"
-        puts "A: #{@a.inspect}"
-        # gets
+        # puts "set A[#{i}][#{vertex.first}] to #{@a[i][vertex.first]}"
+        # puts "A: #{@a.inspect}"
       end
     end
+    return @a.values.last
   end
 
   def get_minimum_inbound_path(i, vertex)
@@ -73,26 +74,26 @@ class APSP
       min_path = false
 
       @graph[vertex].each do |inbound|
-        puts "checking vertex #{inbound}"
+        # puts "checking vertex #{inbound}"
 
         path_to_tail = @a[i - 1][inbound[0]]
-        puts "path_to_tail (A[#{i - 1}][#{inbound[0]}]): #{path_to_tail}"
+        # puts "path_to_tail (A[#{i - 1}][#{inbound[0]}]): #{path_to_tail}"
 
         if path_to_tail
           path = path_to_tail + inbound[1]
           min_path ||= path
 
           if path < min_path
-            puts "[path scanning] found smaller one: #{path}"
+            # puts "[path scanning] found smaller one: #{path}"
             min_path = path
           end          
         end
       end
-      puts "The smallest path for vertex #{vertex} is #{min_path}"
+      # puts "The smallest path for vertex #{vertex} is #{min_path}"
       return min_path
 
     else
-      puts "There is no one inbound arch to vertex #{vertex}"
+      # puts "There is no one inbound arch to vertex #{vertex}"
       return false
     end
   end
