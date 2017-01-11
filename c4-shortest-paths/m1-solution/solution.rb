@@ -54,6 +54,7 @@ class APSP
 
     for i in 1..@num_vertices - 1
       # puts "\ni = #{i}"
+      no_changes = true
       @graph.each do |vertex|
         # puts "\n----------------------------------------------\nLOOKING AT VERTEX #{vertex}"
         case1 = @a[i - 1][vertex.first]
@@ -63,6 +64,11 @@ class APSP
         @a[i][vertex.first] = case2 ? (case1 ? [case1, case2].min : case2) : case1
         # puts "set A[#{i}][#{vertex.first}] to #{@a[i][vertex.first]}"
         # puts "A: #{@a.inspect}"
+        no_changes = false if @a[i][vertex.first] != @a[i - 1][vertex.first]
+      end
+      if no_changes
+        puts "\n[i = #{i}] We're done and can stop the loop!"
+        break
       end
     end
     return @a.values.last
