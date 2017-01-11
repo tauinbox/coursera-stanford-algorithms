@@ -62,44 +62,35 @@ class APSP
         @a[i][vertex.first] = case2 ? (case1 ? [case1, case2].min : case2) : case1
         puts "set A[#{i}][#{vertex.first}] to #{@a[i][vertex.first]}"
         puts "A: #{@a.inspect}"
-        gets        
+        # gets
       end
     end
   end
 
   def get_minimum_inbound_path(i, vertex)
     if @graph[vertex].length > 0
-      sample_edge = @graph[vertex].first
-      # puts "sample_edge: #{sample_edge}"
 
-      path_to_tail = @a[i - 1][sample_edge[0]]
-      # puts "path_to_tail: #{path_to_tail}"
+      min_path = false
 
-      if path_to_tail
+      @graph[vertex].each do |inbound|
+        puts "checking vertex #{inbound}"
 
-        min_path = path_to_tail + sample_edge[1]
-        # puts "let's set sample_edge to #{sample_edge}, min_path to #{min_path}"
+        path_to_tail = @a[i - 1][inbound[0]]
+        puts "path_to_tail (A[#{i - 1}][#{inbound[0]}]): #{path_to_tail}"
 
-        @graph[vertex].each do |inbound|
-          puts "checking vertex #{inbound}"
+        if path_to_tail
+          path = path_to_tail + inbound[1]
+          min_path ||= path
 
-          path_to_tail = @a[i - 1][inbound[0]]
-          puts "path_to_tail (A[#{i - 1}][#{inbound[0]}]): #{path_to_tail}"
-
-          if path_to_tail
-            path = path_to_tail + inbound[1]
-
-            if path < min_path
-              puts "[path scanning] found smaller one: #{path}"
-              min_path = path
-            end          
-          end
+          if path < min_path
+            puts "[path scanning] found smaller one: #{path}"
+            min_path = path
+          end          
         end
-        puts "The smallest path for vertex #{vertex} is #{min_path}"
-        return min_path
-      else
-        return false
       end
+      puts "The smallest path for vertex #{vertex} is #{min_path}"
+      return min_path
+
     else
       puts "There is no one inbound arch to vertex #{vertex}"
       return false
