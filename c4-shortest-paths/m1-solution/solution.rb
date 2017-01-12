@@ -60,6 +60,14 @@ class APSP
         break
       end
     end
+    # extra check for negtive cost loop
+    if !no_changes
+      no_changes_anymore = scan_through_vertices(@num_vertices)
+      if !no_changes_anymore
+        puts "[negative cost loop detected] Can't process this graph"
+        return nil
+      end
+    end
     return @a.values.last
   end
 
