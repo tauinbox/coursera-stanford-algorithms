@@ -6,7 +6,7 @@
 
 class APSP
 
-  attr_reader :num_edges, :num_vertices, :most_shortest_length
+  attr_reader :num_edges, :num_vertices, :shortest_shortest_path, :tail, :head, :has_negative_cost_cycle
 
   def initialize(filedata)
 
@@ -22,24 +22,31 @@ class APSP
     # puts @graph.inspect
     # puts @graph.length
 
-    shortest_shortest_path = false
+    @shortest_shortest_path = false
+    @tail = false
+    @head = false
+    @has_negative_cost_cycle = false
 
     for i in 1..@num_vertices
       @a = {}
       path = find_from_source(i)
 
-      if !path.nil?
-        shortest_shortest_path ||= path[1]
-        shortest_shortest_path = path[1] if path[1] < shortest_shortest_path
+      if path == :negative_cycle
+        @has_negative_cost_cycle = true
+        break
+      end
 
-        puts "Minimum path from vertex #{i} to vertex #{path[0]} is #{path[1]}"
+      if !path.nil?
+        @shortest_shortest_path ||= path[1]
+        if path[1] < @shortest_shortest_path
+          @shortest_shortest_path = path[1]
+          @tail = i 
+          @head = path[0]
+        end
+
+        # puts "Minimum path from vertex #{i} to vertex #{path[0]} is #{path[1]}"
       end
     end
-
-    puts "Shortest shortest path is #{shortest_shortest_path}"
-
-    # path = find_from_source(5)
-    # puts "\nList of shortest paths to vertex #{path[0]} is #{path[1]}"
 
   end
 
@@ -71,7 +78,7 @@ class APSP
       # puts "\ni = #{i}"
       no_changes = scan_through_vertices(i)
       if no_changes
-        puts "\n[i = #{i}] We're done and can stop the loop!"
+        # puts "\n[i = #{i}] We're done and can stop the loop!"
         break
       end
     end
@@ -79,8 +86,8 @@ class APSP
     if !no_changes
       no_changes_anymore = scan_through_vertices(@num_vertices)
       if !no_changes_anymore
-        puts "[negative cost loop detected] Can't process this graph"
-        return false
+        # puts "[negative cost cycle detected] Can't process this graph"
+        return :negative_cycle
       end
     end
     result = @a.values.last.clone
@@ -153,6 +160,12 @@ input_file = 'testArray.txt'
 
 solution = APSP.new(input_file)
 
-# puts "\n--------------------------------------------------------------------"
-# puts " The most shortest path's length: #{solution.most_shortest_length}"
-# puts "--------------------------------------------------------------------\n"
+if solution.has_negative_cost_cycle
+  puts "\n--------------------------------------------------------------------"
+  puts "Negative cost cycle detected! Can't process this graph"
+  puts "--------------------------------------------------------------------\n"
+else
+  puts "\n---------------------------------------------------------------------------"
+  puts "The shortest shortest path is from vertex #{solution.tail} to vertex #{solution.head} with value #{solution.shortest_shortest_path}"
+  puts "---------------------------------------------------------------------------\n"
+end
