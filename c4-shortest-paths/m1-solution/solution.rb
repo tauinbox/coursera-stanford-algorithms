@@ -18,13 +18,28 @@ class APSP
     # }
 
     @graph = {}
-    @a = {}
     load_data filedata
     # puts @graph.inspect
     # puts @graph.length
 
-    path = find_from_source(1)
-    puts "\nList of shortest paths from chosen vertex: #{path.inspect}"
+    shortest_shortest_path = false
+
+    for i in 1..@num_vertices
+      @a = {}
+      path = find_from_source(i)
+
+      if !path.nil?
+        shortest_shortest_path ||= path[1]
+        shortest_shortest_path = path[1] if path[1] < shortest_shortest_path
+
+        puts "Minimum path from vertex #{i} to vertex #{path[0]} is #{path[1]}"
+      end
+    end
+
+    puts "Shortest shortest path is #{shortest_shortest_path}"
+
+    # path = find_from_source(5)
+    # puts "\nList of shortest paths to vertex #{path[0]} is #{path[1]}"
 
   end
 
@@ -68,7 +83,19 @@ class APSP
         return false
       end
     end
-    return @a.values.last
+    result = @a.values.last.clone
+    
+    # remove source vertex data from hash
+    result.delete(s)
+
+    # remove all empty (nil) entries
+    result.delete_if { |k, v| v.nil? }
+
+    shortest_path = result.min_by{ |k, v| v }
+    # puts "Shortest path: #{shortest_path}"
+
+    # return @a.values.last
+    return shortest_path
   end
 
   def scan_through_vertices(i)
@@ -121,7 +148,7 @@ end
 
 ###########################################################################################################################
 
-# input_file = 'g1.txt'
+# input_file = 'g3.txt'
 input_file = 'testArray.txt'
 
 solution = APSP.new(input_file)
