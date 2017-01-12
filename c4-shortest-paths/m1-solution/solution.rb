@@ -60,12 +60,12 @@ class APSP
         break
       end
     end
-    # extra check for negtive cost loop
+    # extra check for negtive cost cycle if last iteration has changes
     if !no_changes
       no_changes_anymore = scan_through_vertices(@num_vertices)
       if !no_changes_anymore
         puts "[negative cost loop detected] Can't process this graph"
-        return nil
+        return false
       end
     end
     return @a.values.last
@@ -127,5 +127,5 @@ input_file = 'testArray.txt'
 solution = APSP.new(input_file)
 
 # puts "\n--------------------------------------------------------------------"
-# puts " The most shortest path length: #{solution.most_shortest_length}"
+# puts " The most shortest path's length: #{solution.most_shortest_length}"
 # puts "--------------------------------------------------------------------\n"
