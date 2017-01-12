@@ -54,24 +54,29 @@ class APSP
 
     for i in 1..@num_vertices - 1
       # puts "\ni = #{i}"
-      no_changes = true
-      @graph.each do |vertex|
-        # puts "\n----------------------------------------------\nLOOKING AT VERTEX #{vertex}"
-        case1 = @a[i - 1][vertex.first]
-        case2 = get_minimum_inbound_path(i, vertex.first)
-        # puts "case1: #{case1}, case2: #{case2}"
-        @a[i] = Hash.new if !@a[i]
-        @a[i][vertex.first] = case2 ? (case1 ? [case1, case2].min : case2) : case1
-        # puts "set A[#{i}][#{vertex.first}] to #{@a[i][vertex.first]}"
-        # puts "A: #{@a.inspect}"
-        no_changes = false if @a[i][vertex.first] != @a[i - 1][vertex.first]
-      end
+      no_changes = scan_through_vertices(i)
       if no_changes
         puts "\n[i = #{i}] We're done and can stop the loop!"
         break
       end
     end
     return @a.values.last
+  end
+
+  def scan_through_vertices(i)
+    no_changes = true    
+    @graph.each do |vertex|
+      # puts "\n----------------------------------------------\nLOOKING AT VERTEX #{vertex}"
+      case1 = @a[i - 1][vertex.first]
+      case2 = get_minimum_inbound_path(i, vertex.first)
+      # puts "case1: #{case1}, case2: #{case2}"
+      @a[i] = Hash.new if !@a[i]
+      @a[i][vertex.first] = case2 ? (case1 ? [case1, case2].min : case2) : case1
+      # puts "set A[#{i}][#{vertex.first}] to #{@a[i][vertex.first]}"
+      # puts "A: #{@a.inspect}"
+      no_changes = false if @a[i][vertex.first] != @a[i - 1][vertex.first]
+    end
+    return no_changes  
   end
 
   def get_minimum_inbound_path(i, vertex)
