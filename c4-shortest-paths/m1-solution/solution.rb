@@ -10,11 +10,12 @@ class APSP
 
   def initialize(filedata)
 
-    # init undirected graph by loading data from file
+    # init directed graph by loading data from file
     # graph structure example:
+
     # {
-    #  node1 => {node2 => cost, node3 => cost},
-    #  node2 => {node1 => cost, node5 => cost}, ...
+    #  node1 <= {node2 => cost, node3 => cost},
+    #  node2 <= {node1 => cost, node5 => cost}, ...
     # }
 
     @graph = {}
@@ -22,22 +23,32 @@ class APSP
     # puts @graph.inspect
     # puts @graph.length
 
+    # init variables with false if not exist
     @shortest_shortest_path = false
     @tail = false
     @head = false
     @has_negative_cost_cycle = false
 
+    # loop through all vertices to find all shortest paths
     for i in 1..@num_vertices
+
+      # reset resulting hash
       @a = {}
+
+      # find the shortest path from i to one another from all
       path = find_from_source(i)
 
+      # check for negative cycle presence
       if path == :negative_cycle
         @has_negative_cost_cycle = true
         break
       end
 
+      # check if path exists
       if !path.nil?
         @shortest_shortest_path ||= path[1]
+
+        # choose the shortest one
         if path[1] < @shortest_shortest_path
           @shortest_shortest_path = path[1]
           @tail = i 
@@ -47,7 +58,6 @@ class APSP
         # puts "Minimum path from vertex #{i} to vertex #{path[0]} is #{path[1]}"
       end
     end
-
   end
 
   # Method for loading data from file
@@ -74,14 +84,18 @@ class APSP
     @a[0] = {}
     @a[0][s] = 0
 
+    # main loop (permitted number of hops)
     for i in 1..@num_vertices - 1
       # puts "\ni = #{i}"
+
+      # scan through all vertices with permitted number of hops (i)
       no_changes = scan_through_vertices(i)
       if no_changes
         # puts "\n[i = #{i}] We're done and can stop the loop!"
         break
       end
     end
+    
     # extra check for negtive cost cycle if last iteration has changes
     if !no_changes
       no_changes_anymore = scan_through_vertices(@num_vertices)
@@ -109,13 +123,22 @@ class APSP
     no_changes = true    
     @graph.each do |vertex|
       # puts "\n----------------------------------------------\nLOOKING AT VERTEX #{vertex}"
+
+      # consider two possible cases
       case1 = @a[i - 1][vertex.first]
       case2 = get_minimum_inbound_path(i, vertex.first)
+
       # puts "case1: #{case1}, case2: #{case2}"
+
       @a[i] = Hash.new if !@a[i]
+
+      # choose the smallest one from two cases
       @a[i][vertex.first] = case2 ? (case1 ? [case1, case2].min : case2) : case1
+
       # puts "set A[#{i}][#{vertex.first}] to #{@a[i][vertex.first]}"
       # puts "A: #{@a.inspect}"
+
+      # set flag to check changes
       no_changes = false if @a[i][vertex.first] != @a[i - 1][vertex.first]
     end
     return no_changes  
@@ -126,12 +149,16 @@ class APSP
 
       min_path = false
 
+      # scan through all vertices which is directed toward given vertex
       @graph[vertex].each do |inbound|
         # puts "checking vertex #{inbound}"
 
+        # check if we have already calculated path to tail
         path_to_tail = @a[i - 1][inbound[0]]
+
         # puts "path_to_tail (A[#{i - 1}][#{inbound[0]}]): #{path_to_tail}"
 
+        # if we have, then pick one with minimum path to head
         if path_to_tail
           path = path_to_tail + inbound[1]
           min_path ||= path
@@ -142,6 +169,7 @@ class APSP
           end          
         end
       end
+
       # puts "The smallest path for vertex #{vertex} is #{min_path}"
       return min_path
 
