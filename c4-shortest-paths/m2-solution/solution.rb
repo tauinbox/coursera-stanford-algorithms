@@ -38,56 +38,79 @@ class TSP
 
 
     # set the basecase ('s' has only one vertex)
-    @a[1] = {}
-    @a[1][1] = 0
+    # @a[1] = {}
+    # @a[1][1] = 0
 
-    for m in 2..@graph.length
-      for s in 1..m
-        puts "\n--------------------------------------------------------\nConsider vertex #{s} from set of #{m} vertices"
-
-        # iterate through relevant choices of j in current set s
-        for j in 1..s
-
-          # skip the start vertex (vertex 1 in this case)
-          if j == 1
-            puts "- Skip vertex 1 (it's starting point and can't be j)"
-            next
-          end
-
-          puts "\nLets j = #{j}\n\n"
-
-          @a[s] = Hash.new if !@a[s]
-          @a[s][j] = choose_min(s, j)
-
-          puts "\nSet A[#{s}][#{j}] = #{@a[s][j]}\nA = #{@a.inspect}"
-          gets
-        end
+    for set in all_sets
+      puts "Set: #{set}"
+      @a[set] = Hash.new if !@a[set]
+      if set == [1]
+        @a[set][1] = 0
+      else
+        @a[set][1] = Float::INFINITY
       end
     end
+
+    puts "A: #{@a}"
+
+    for m in 2..@graph.length
+
+      for subset in all_subsets_with_size(m - 1)
+
+        set = [1] + subset
+
+        puts "Set: #{set.inspect}"
+
+        for j in set
+          if j != 1
+            subset_without_j = set - [j]
+
+            puts "\n------- Lets j = #{j}, Subset without j: #{subset_without_j.inspect}\n\n"
+
+            array_to_choose_min = []
+
+            for k in set
+              if k != j
+                array_to_choose_min << @a[subset_without_j][k] + @graph[k][j]
+              end
+            end
+            @a[set][j] = array_to_choose_min.min
+          end
+        end
+
+      end
+    end
+
+    # array_of_paths = []
+
+    # for j in 1..@graph.length
+    #   if j == 1
+    #     puts "- Skip vertex 1 (it's starting point and we should skip it)"
+    #     next
+    #   end
+
+    #   for i in 1..@graph.length
+    #     puts "A[#{i}][#{j}] = #{@a[i][j]}, @graph[#{j}][1] = #{@graph[j][1]}"
+    #     array_of_paths << @a[i][j] + @graph[j][1] if @a[i][j]
+    #   end
+    # end
+    # puts "Arr: #{array_of_paths}"
+    # puts "TSP: #{array_of_paths.min}"
 
   end
 
-  def choose_min(s, j)
-    puts "Calculating A[#{s}][#{j}]..."
-    array_to_choose_min = []
+  def all_subsets_with_size(size)
+    set = (2..@graph.length).to_a
+    set.combination(size).to_a
+  end
 
-    for k in 1..s
-      puts "\nLooking at vertex k = #{k} from possible set of #{s}"
-
-      # skip if 'k' is equal to 'j'
-      if k == j
-        puts "Excluded! (#{k}), because it's j-vertex\n\n"
-        next
-      end
-
-      puts "A[#{k}][#{k}] = #{@a[k][k]}, Edge length to 'j' = #{@graph[k][j]}"
-      array_to_choose_min << @a[k][k] + @graph[k][j] if @a[k][k]
-      # array_to_choose_min << (@a[s - k][k] ? @a[s - k][k] + @graph[k][j] : nil)
-      puts "array: #{array_to_choose_min.inspect}"
+  def all_sets
+    comb = []
+    set = (1..@graph.length).to_a
+    for size in 1..@graph.length
+      comb.concat(set.combination(size).to_a)
     end
-
-    puts "array_to_choose_min: #{array_to_choose_min.inspect}"
-    return array_to_choose_min.min
+    return comb
   end
 
   # Method for loading data from file
