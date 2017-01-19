@@ -71,8 +71,11 @@ class TSP
     # puts "\nAll subsets: #{all_subsets.inspect}"
 
     # puts "\nA: #{@a}"
+    data_to_remove = [1]
 
     for m in 2..@graph.length
+
+      subsets_per_round = []
 
       puts "Passing through subsets with length #{m}..."
 
@@ -80,6 +83,8 @@ class TSP
 
         next if subset.length < m
         break if subset.length > m
+
+        subsets_per_round << subset
 
         for j in subset
           if j != 1
@@ -106,6 +111,15 @@ class TSP
         end
 
       end
+      # puts "Data to remove: #{data_to_remove}"
+
+      @a.delete(data_to_remove) if data_to_remove == [1]
+
+      data_to_remove.each do |set_to_purge|
+        @a.delete(set_to_purge)
+      end
+      # puts "\nThis round A: #{@a}\n\nSubsets: #{subsets_per_round.inspect}\n\n"
+      data_to_remove = subsets_per_round
     end
 
     last_set = @a.values.last.clone
