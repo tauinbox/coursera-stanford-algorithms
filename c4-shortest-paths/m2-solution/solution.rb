@@ -39,23 +39,6 @@ class TSP
     puts "\nGraph: #{@graph.inspect}\n\n"
 
 
-    # set the basecase for all sets for vertex 1
-
-    # for i in 2..@graph.length + 1
-    #   for subset in all_subsets_with_size(i - 2)
-    #     set = [1] + subset
-
-    #     @a[set] = Hash.new if !@a[set]
-
-    #     if set == [1]
-    #       @a[set][1] = 0
-    #     else
-    #       @a[set][1] = Float::INFINITY
-    #     end        
-
-    #   end
-    # end
-
     first_hop = [1]
     @a[first_hop] = {}
     @a[first_hop][1] = 0
@@ -70,12 +53,7 @@ class TSP
 
     # puts "\nAll subsets: #{all_subsets.inspect}"
 
-    # puts "\nA: #{@a}"
-    data_to_remove = [1]
-
     for m in 2..@graph.length
-
-      subsets_per_round = []
 
       puts "Passing through subsets with length #{m}..."
 
@@ -83,8 +61,6 @@ class TSP
 
         next if subset.length < m
         break if subset.length > m
-
-        subsets_per_round << subset
 
         for j in subset
           if j != 1
@@ -111,15 +87,11 @@ class TSP
         end
 
       end
-      # puts "Data to remove: #{data_to_remove}"
 
-      @a.delete(data_to_remove) if data_to_remove == [1]
+      # clean up hash by removing irrelevant data
+      @a.delete_if {|k, v| v.length == (m - 2) }
 
-      data_to_remove.each do |set_to_purge|
-        @a.delete(set_to_purge)
-      end
-      # puts "\nThis round A: #{@a}\n\nSubsets: #{subsets_per_round.inspect}\n\n"
-      data_to_remove = subsets_per_round
+      # puts "\nThis round A: #{@a}\n\n"
     end
 
     last_set = @a.values.last.clone
