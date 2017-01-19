@@ -14,8 +14,8 @@ class TSP
     # graph structure example:
 
     # {
-    #  node1 <= {node2 => cost, node3 => cost},
-    #  node2 <= {node1 => cost, node5 => cost}, ...
+    #  node1 => {node2 => cost, node3 => cost},
+    #  node2 => {node1 => cost, node5 => cost}, ...
     # }
 
     @graph = {}
@@ -93,21 +93,19 @@ class TSP
       end
     end
 
-    # array_of_paths = []
+    last_set = @a.values.last.clone
+    puts "\nlast set in A: #{last_set}"
 
-    # for j in 1..@graph.length
-    #   if j == 1
-    #     puts "- Skip vertex 1 (it's starting point and we should skip it)"
-    #     next
-    #   end
+    array_to_choose_min = []
 
-    #   for i in 1..@graph.length
-    #     puts "A[#{i}][#{j}] = #{@a[i][j]}, @graph[#{j}][1] = #{@graph[j][1]}"
-    #     array_of_paths << @a[i][j] + @graph[j][1] if @a[i][j]
-    #   end
-    # end
-    # puts "Arr: #{array_of_paths}"
-    # puts "TSP: #{array_of_paths.min}"
+    last_set.each do |k, v|
+      next if k == 1
+      array_to_choose_min << v + @graph[k][1]
+    end
+
+    result = array_to_choose_min.min
+
+    puts "\nResult: #{result}"
 
   end
 
