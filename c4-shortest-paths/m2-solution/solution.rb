@@ -21,6 +21,8 @@ class TSP
     @graph = {}
     @a = {}
     @coordinates = []
+
+    # @all_subsets = []
     # load_data filedata
 
     @graph = {
@@ -37,21 +39,28 @@ class TSP
     puts "\nGraph: #{@graph.inspect}"
 
 
-    # set the basecase ('s' has only one vertex)
-    # @a[1] = {}
-    # @a[1][1] = 0
+    # set the basecase for all sets for vertex 1
 
-    for set in all_sets
-      puts "Set: #{set}"
-      @a[set] = Hash.new if !@a[set]
-      if set == [1]
-        @a[set][1] = 0
-      else
-        @a[set][1] = Float::INFINITY
+    for i in 2..@graph.length + 1
+      for subset in all_subsets_with_size(i - 2)
+        set = [1] + subset
+
+        # @all_subsets << set
+
+        @a[set] = Hash.new if !@a[set]
+
+        if set == [1]
+          @a[set][1] = 0
+        else
+          @a[set][1] = Float::INFINITY
+        end        
+
       end
     end
 
-    puts "A: #{@a}"
+    # puts "All subsets: #{@all_subsets}"
+
+    puts "\nA: #{@a}"
 
     for m in 2..@graph.length
 
@@ -59,22 +68,25 @@ class TSP
 
         set = [1] + subset
 
-        puts "Set: #{set.inspect}"
+        # puts "Set: #{set.inspect}"
 
         for j in set
           if j != 1
             subset_without_j = set - [j]
 
-            puts "\n------- Lets j = #{j}, Subset without j: #{subset_without_j.inspect}\n\n"
+            puts "\n------- Lets j = #{j}, Set: #{set}, Subset without j: #{subset_without_j.inspect}\n\n"
 
             array_to_choose_min = []
 
             for k in set
               if k != j
+                puts "\nConsider k = #{k}, A#{subset_without_j}[#{k}] = #{@a[subset_without_j][k]}, distance from k to j = #{@graph[k][j]}"
                 array_to_choose_min << @a[subset_without_j][k] + @graph[k][j]
               end
             end
+            puts "\nArray to choose minimum: #{array_to_choose_min.inspect}"
             @a[set][j] = array_to_choose_min.min
+            puts "Chosen minimum: #{@a[set][j]}"
           end
         end
 
@@ -102,15 +114,6 @@ class TSP
   def all_subsets_with_size(size)
     set = (2..@graph.length).to_a
     set.combination(size).to_a
-  end
-
-  def all_sets
-    comb = []
-    set = (1..@graph.length).to_a
-    for size in 1..@graph.length
-      comb.concat(set.combination(size).to_a)
-    end
-    return comb
   end
 
   # Method for loading data from file
