@@ -33,12 +33,12 @@ class TSP
     load_data filedata
 
     # simple test graph which minimum cost weight from 1 through all other vertices is 13
-    @graph = {
-      1=>{2=>2, 4=>3, 3=>1},
-      2=>{1=>2, 3=>4, 4=>5},
-      3=>{1=>1, 2=>4, 4=>6},
-      4=>{3=>6, 1=>3, 2=>5}
-    }
+    # @graph = {
+    #   1=>{2=>2, 4=>3, 3=>1},
+    #   2=>{1=>2, 3=>4, 4=>5},
+    #   3=>{1=>1, 2=>4, 4=>6},
+    #   4=>{3=>6, 1=>3, 2=>5}
+    # }
 
     # puts @number_of_cities
 
@@ -63,13 +63,13 @@ class TSP
     # puts "\nAll subsets: #{all_subsets.inspect}"
 
     # data array for removing irrelevant data (method 1)
-    data_to_remove = [1]
+    # data_to_remove = [1]
 
     # main cycle which determines size of subsets to consider
     for m in 2..@graph.length
 
       # data array for removing irrelevant data (method 1)
-      subsets_per_round = []
+      # subsets_per_round = []
 
       puts "Passing through subsets with length #{m}..."
 
@@ -81,7 +81,7 @@ class TSP
         break if subset.length > m
 
         # fill the data array for removing irrelevant data (method 1)
-        subsets_per_round << subset
+        # subsets_per_round << subset
 
         for j in subset
           if j != 1
@@ -119,15 +119,15 @@ class TSP
 
       # puts "Data to remove: #{data_to_remove}"
 
-      @a.delete(data_to_remove) if data_to_remove == [1]
+      # @a.delete(data_to_remove) if data_to_remove == [1]
 
-      data_to_remove.each { |set_to_purge| @a.delete(set_to_purge) }
+      # data_to_remove.each { |set_to_purge| @a.delete(set_to_purge) }
 
-      # puts "\nThis round A: #{@a}\n\nSubsets: #{subsets_per_round.inspect}\n\n"
-      data_to_remove = subsets_per_round
+      # # puts "\nThis round A: #{@a}\n\nSubsets: #{subsets_per_round.inspect}\n\n"
+      # data_to_remove = subsets_per_round
 
-      # # clean up hash by removing irrelevant data (method 2)
-      # @a.delete_if { |k, v| v.length == (m - 2) }
+      # clean up hash by removing irrelevant data (method 2)
+      @a.delete_if { |k, v| v.length == (m - 2) }
 
       # puts "\nThis round A: #{@a}\n\n"
     end
@@ -186,7 +186,7 @@ input_file = 'tsp.txt'
 
 solution = TSP.new(input_file)
 
-puts "\n----------------------------------------------------------------------------------------------"
-puts "The minimum cost of a traveling salesman tour for the given instance (rounded to ceil): #{solution.tsp_tour.ceil}"
-puts "----------------------------------------------------------------------------------------------\n"
+puts "\n-------------------------------------------------------------------------------------------------"
+puts "The minimum cost of a traveling salesman tour for the given instance (rounded to low int): #{solution.tsp_tour.to_i}"
+puts "-------------------------------------------------------------------------------------------------\n"
 
