@@ -19,12 +19,12 @@ class TSP
     # tour length
     @tour_length = 0    
 
-    # load data and calculate the main graph
+    # load data
     load_data filedata
 
     # puts @number_of_cities
 
-    puts "\nCoordinates number: #{@coordinates.length}"
+    puts "\nNumber of cities: #{@coordinates.length}"
     # puts "\nCoordinates: #{@coordinates.inspect}"
 
     # set first point of tour
@@ -32,23 +32,29 @@ class TSP
 
     # puts "Tour: #{tour}"
 
+    # main loop through all possible cities
     while @coordinates.length > 0 do
       # puts "Let's find the nearest hop from point #{tour.last.inspect}"
       next_hop = find_nearest(@tour.last)
-      # puts "Found #{next_hop[0]} element at the distance #{next_hop[1]}, add it to our route"
+
+      # puts "Found nearest element with index #{next_hop[0]} at the distance #{next_hop[1]}, add it to our route"
       @tour << @coordinates.slice!(next_hop[0])
+
+      # add calculated distance to the overall tour length
       @tour_length += next_hop[1]
+
       # puts "Tour length: #{@tour_length}\nTour: #{tour.inspect}"
       # gets
     end
 
     # puts "Tour: #{tour.inspect}"
 
+    # calculate length of path to home from the latest point
     path_to_home = Math.sqrt((@tour.last[0] - @tour.first[0]) ** 2 + (@tour.last[1] - @tour.first[1]) ** 2)
     puts "Tour length: #{@tour_length}, Path to home: #{path_to_home}"
+
     @tour_length += path_to_home
     puts "Total length: #{@tour_length}"
-
   end
 
   # Method for loading data from file
@@ -70,13 +76,16 @@ class TSP
     point_index = false
     minimum = false
 
+    # iterate through all possible points
     @coordinates.each_with_index do |end_point, index|
+
       length = Math.sqrt((start_point[0] - end_point[0]) ** 2 + (start_point[1] - end_point[1]) ** 2)
       minimum ||= length
       point_index ||= index
 
       # puts "squared_length: #{squared_length}, minimum: #{minimum}, point_index: #{point_index}"
 
+      # find the closest one
       if length < minimum
         minimum = length
         point_index = index
