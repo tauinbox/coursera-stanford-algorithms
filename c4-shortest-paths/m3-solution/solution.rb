@@ -1,6 +1,6 @@
 # A heuristic for the Travelling salesman problem (TSP)
 
-# Compute the minimum cost of a traveling salesman tour for the given instance, rounded down to the nearest integer
+# Compute the heuristic minimum cost of a traveling salesman tour for the given instance, rounded down to the nearest integer
 
 ###########################################################################################################################
 
@@ -44,10 +44,10 @@ class TSP
 
     # puts "Tour: #{tour.inspect}"
 
-    path_to_home = (@tour.last[0] - @tour.first[0]) ** 2 + (@tour.last[1] - @tour.first[1]) ** 2
+    path_to_home = Math.sqrt((@tour.last[0] - @tour.first[0]) ** 2 + (@tour.last[1] - @tour.first[1]) ** 2)
+    puts "Tour length: #{@tour_length}, Path to home: #{path_to_home}"
     @tour_length += path_to_home
-
-    @tour_length = Math.sqrt(@tour_length)
+    puts "Total length: #{@tour_length}"
 
   end
 
@@ -71,14 +71,14 @@ class TSP
     minimum = false
 
     @coordinates.each_with_index do |end_point, index|
-      squared_length = (start_point[0] - end_point[0]) ** 2 + (start_point[1] - end_point[1]) ** 2
-      minimum ||= squared_length
+      length = Math.sqrt((start_point[0] - end_point[0]) ** 2 + (start_point[1] - end_point[1]) ** 2)
+      minimum ||= length
       point_index ||= index
 
       # puts "squared_length: #{squared_length}, minimum: #{minimum}, point_index: #{point_index}"
 
-      if squared_length < minimum
-        minimum = squared_length
+      if length < minimum
+        minimum = length
         point_index = index
       end
     end
@@ -94,7 +94,7 @@ input_file = 'nn.txt'
 
 solution = TSP.new(input_file)
 
-puts "\n-----------------------------------------------------------------------------------------------------------"
+puts "\n------------------------------------------------------------------------------------------------------------"
 puts "The heuristic minimum cost of a traveling salesman tour for the given instance (rounded to low int): #{solution.tour_length.to_i}"
-puts "-----------------------------------------------------------------------------------------------------------\n"
+puts "------------------------------------------------------------------------------------------------------------\n"
 
