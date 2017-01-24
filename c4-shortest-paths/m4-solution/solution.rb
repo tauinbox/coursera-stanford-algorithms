@@ -1,4 +1,4 @@
-# 2SAT problem
+# Papadimitrou's 2SAT algorithm (too long for big data)
 
 # Determine which of the 6 instances are satisfiable, and which are unsatisfiable. 
 # In the box below, enter a 6-bit string, where the ith bit should be 1 if the ith instance is satisfiable, and 0 otherwise. 
@@ -8,12 +8,13 @@
 
 class TwoSAT
 
-  attr_reader :number_of_elements
+  attr_reader :number_of_elements, :is_satisfied
 
   def initialize(filedata)
 
     @set_of_clauses = []
     @variables = {}
+    @is_satisfied = false
 
     # load data
     load_data filedata
@@ -28,14 +29,15 @@ class TwoSAT
       (2 * @number_of_elements ** 2).times do
         result = check_clauses
         if result[0]
-          puts "It can be satisfied. We are done!!!"
+          # puts "It can be satisfied!"
+          @is_satisfied = true
           return
         end
         var_index_to_flip = [result[1], result[2]].sample
         @variables[var_index_to_flip] = !@variables[var_index_to_flip]
       end
     end
-    puts "Unsatisfied... sorry"
+    # puts "Unsatisfied... sorry"
 
   end
 
@@ -77,13 +79,14 @@ end
 
 ###########################################################################################################################
 
-input_file = '2sat1.txt'
-# input_file = 'test_data_true.txt'
+# input_file = '2sat1.txt'
+input_file = 'test_data_true.txt'
 # input_file = 'test_data_false.txt'
 
 solution = TwoSAT.new(input_file)
 
-# puts "\n------------------------------------------------------------------------------------------------------------"
-# puts "The result is: #{solution.tour_length.result}"
-# puts "------------------------------------------------------------------------------------------------------------\n"
+puts "\n---------------------"
+puts "It can be satisfied!" if solution.is_satisfied
+puts "Unsatisfied... sorry" if !solution.is_satisfied
+puts "---------------------\n"
 
