@@ -79,7 +79,7 @@ end
 
 ###########################################################################################################################
 
-input_file = '2sat1.txt'
+input_file = '2sat2.txt'
 # input_file = 'test_data_true.txt'
 # input_file = 'test_data_false.txt'
 
